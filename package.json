@@ -1,0 +1,7 @@
+{
+    "name": "bless-admin-bot",
+    "version": "1.0.0",
+    "dependencies": {
+        "telegraf": "^3.32.0"
+    }
+}
