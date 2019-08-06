@@ -1,44 +1,34 @@
 const Telegraf = require("telegraf");
-const RSVP = require('./rsvp.js');
+const RsvpHandler = require("./RsvpHandler.js");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, {polling: true});
 
-/** Constant messages */
-const MSG_START =
-  "Hi there! I can help you manage your volunteers attendance. Start by adding me into a group.";
-const MSG_HELP = "Help message coming soon";
+bot.command('coming', ctx => {
+  markComing(ctx.from.id);
+}); 
 
-/** Mode Flags */
-let addingNewRsvp = false;
-
-/** RSVP */
-let latestRSVP = null;
-
-/** Static Commands */
-bot.start(ctx => ctx.reply(MSG_START));
-bot.help(ctx => {
-  ctx.reply(MSG_HELP);
-});
-bot.command("new_rsvp", ctx => {
-  addingNewRsvp = true;
-  latestRSVP = new RSVP();
-  ctx.reply(`Creating new event.\nPlease tell me the description of your event.`);
-});
-
-/** Parse Messages */
-bot.on('text', ctx => {
-  if (addingNewRsvp) {
-      if (latestRSVP.description === null) {
-        latestRSVP.addDescription(ctx.message.text);
-        ctx.reply('Input an option for voters:');
-      } else if (ctx.message.text === '/end') {
-        ctx.reply(latestRSVP.toString());
-        addingNewRsvp = false;
-      } else {
-        latestRSVP.addOption(ctx.message.text);
-        ctx.reply('Input an option for voters or do /end to stop:');
-      }
+bot.command('notcoming', ctx => {
+  if (standardiseText(ctx.message.text) === '/notcoming') {
+    ctx.reply(`Please help to fill in a reason by doing "/notcoming [reason]"`);
+  } else {
+    markNotComing(ctx.from.id, ctx.message.text.match(/\/notcoming (.*)/)[1]);
   }
 });
 
 bot.launch();
+
+const markComing = userId => {
+  console.log(`${userId} is coming`);
+};
+
+const markNotComing = (userId, reason) => {
+    console.log(`${userId} is not coming because ${reason}`);
+};
+
+const rsvpBuilder = ((name, dateString) => {
+  return `Hi volunteers, the next ${name} will be on ${dateString}. Please indicate your attendance using the commands /coming or /notcoming [reason].`
+});
+
+const standardiseText = text => {
+  return text.trim().toLowerCase();
+};
