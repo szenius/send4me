@@ -1,5 +1,4 @@
 const Telegraf = require("telegraf");
-const RsvpHandler = require("./RsvpHandler.js");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, {polling: true});
 
