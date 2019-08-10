@@ -30,7 +30,7 @@ bot.launch();
 
 while (sentDates.length === 0) {
   // TODO: use infinite loop with timeout
-  let today = new Date();
+  const today = new Date();
   if (inSchedule(today) && !savedDate(today, sentDates)) {
     console.log("Sending message...");
     bot.telegram.sendMessage(process.env.CHAT_ID, "Hello").catch(console.error);
