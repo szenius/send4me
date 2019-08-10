@@ -1,0 +1,9 @@
+{
+    "name": "bless-admin-bot",
+    "version": "1.0.0",
+    "dependencies": {
+        "dotenv": "^8.0.0",
+        "telegraf": "^3.32.0",
+        "telegraf-inline-menu": "^3.6.0"
+    }
+}
