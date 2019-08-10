@@ -12,10 +12,12 @@ bot.command('coming', ctx => {
 }); 
 
 bot.command('notcoming', ctx => {
-  if (standardiseText(ctx.message.text) === '/notcoming') {
+  const message = standardiseText(ctx.message.text);
+  const match = message.match(/\/notcoming (.*)/);
+  if (match === null) {
     ctx.reply(`Please help to fill in a reason by doing "/notcoming [reason]"`);
   } else {
-    markNotComing(ctx.from.id, ctx.message.text.match(/\/notcoming (.*)/)[1]);
+    markNotComing(ctx.from.id, match[1]);
   }
 });
 
