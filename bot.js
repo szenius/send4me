@@ -14,6 +14,10 @@ bot.command('notcoming', ctx => {
   }
 });
 
+bot.on('message', ctx => {
+  console.log(ctx.message);
+});
+
 bot.launch();
 
 const markComing = userId => {
