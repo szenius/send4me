@@ -1,9 +1,11 @@
 const Telegraf = require('telegraf');
 const {savedDate, inSchedule} = require('./utils/DateUtils.js');
+const {standardiseText} = require('./utils/TextUtils.js');
+const {markComing, markNotComing} = require('./RequestHandler.js');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
-const sentDates = [];
+const sentDates = []; // TODO: save to database
 
 bot.command('coming', ctx => {
   markComing(ctx.from.id);
@@ -17,27 +19,7 @@ bot.command('notcoming', ctx => {
   }
 });
 
-bot.on('message', ctx => {
-  console.log(ctx.message);
-});
-
 bot.launch();
-
-const markComing = userId => {
-  console.log(`${userId} is coming`);
-};
-
-const markNotComing = (userId, reason) => {
-    console.log(`${userId} is not coming because ${reason}`);
-};
-
-const rsvpBuilder = ((name, dateString) => {
-  return `Hi volunteers, the next ${name} will be on ${dateString}. Please indicate your attendance using the commands /coming or /notcoming [reason].`
-});
-
-const standardiseText = text => {
-  return text.trim().toLowerCase();
-};
 
 while (sentDates.length === 0) { // TODO: use infinite loop with timeout
   let today = new Date();
