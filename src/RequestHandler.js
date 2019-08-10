@@ -9,6 +9,6 @@ const markNotComing = (userId, reason) => {
 };
 
 module.exports = {
-    markComing,
-    markNotComing,
+  markComing,
+  markNotComing
 };

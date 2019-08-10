@@ -3,5 +3,5 @@ const standardiseText = text => {
 };
 
 module.exports = {
-    standardiseText,
-}
+  standardiseText
+};

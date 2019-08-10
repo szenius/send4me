@@ -11,18 +11,18 @@ const savedDate = (newDate, sentDates) => {
 };
 
 const inSchedule = date => {
-  return date.getDate() % 2 == 0;
+  return date.getDate() % 2 == 0; // TODO: read from schedule in database
 };
 
 const isSameDate = (date1, date2) => {
-    return (
-      date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getYear() === date2.getYear()
-    );
-  };  
+  return (
+    date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getYear() === date2.getYear()
+  );
+};
 
 module.exports = {
-    savedDate,
-    inSchedule,
+  savedDate,
+  inSchedule
 };
