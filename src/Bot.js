@@ -8,6 +8,7 @@ const {
   COMMAND_NOTCOMING,
   EXPECTED_NOTCOMING_PATTERN
 } = require("./constants/Commands.js");
+const Promise = require("bluebird");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 const sentDates = []; // TODO: save to database
@@ -26,14 +27,17 @@ bot.command(COMMAND_NOTCOMING, ctx => {
   }
 });
 
-bot.launch();
-
-while (sentDates.length === 0) {
-  // TODO: use infinite loop with timeout
+const run = () => {
   const today = new Date();
+  console.log("Checking if should send message...");
   if (inSchedule(today) && !savedDate(today, sentDates)) {
     console.log("Sending message...");
-    bot.telegram.sendMessage(process.env.CHAT_ID, "Hello").catch(console.error);
+    bot.telegram.sendMessage(process.env.CHAT_ID, "Hello World");
+    console.log("Sent message");
     sentDates.push(today);
   }
-}
+  return Promise.delay(5000).then(() => run());
+};
+
+bot.launch();
+run();

@@ -1,9 +1,6 @@
 const savedDate = (newDate, sentDates) => {
-  console.log(`new date: ${newDate}`);
-  console.log(`savedDates: ${sentDates}`);
   for (const sentDate of sentDates) {
     if (isSameDate(sentDate, newDate)) {
-      console.log(`same date! ${sentDate} & ${newDate}`);
       return true;
     }
   }
@@ -11,7 +8,7 @@ const savedDate = (newDate, sentDates) => {
 };
 
 const inSchedule = date => {
-  return date.getDate() % 2 == 0; // TODO: read from schedule in database
+  return date.getDate() % 2 != 0; // TODO: read from schedule in database
 };
 
 const isSameDate = (date1, date2) => {
