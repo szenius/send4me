@@ -1,5 +1,7 @@
 require("dotenv").config();
 const Telegraf = require("telegraf");
+const Extra = require("telegraf/extra");
+const Promise = require("bluebird");
 const { savedDate, inSchedule } = require("./utils/DateUtils.js");
 const { standardiseText } = require("./utils/TextUtils.js");
 const { markComing, markNotComing } = require("./RequestHandler.js");
@@ -8,7 +10,7 @@ const {
   COMMAND_NOTCOMING,
   EXPECTED_NOTCOMING_PATTERN
 } = require("./constants/Commands.js");
-const Promise = require("bluebird");
+const { buildRsvp } = require("./rsvp/DefaultRsvpBuilder.js");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 const sentDates = []; // TODO: save to database
@@ -32,7 +34,8 @@ const run = () => {
   console.log("Checking if should send message...");
   if (inSchedule(today) && !savedDate(today, sentDates)) {
     console.log("Sending message...");
-    bot.telegram.sendMessage(process.env.CHAT_ID, "Hello World");
+    const message = buildRsvp("reading session", "Friday, 23 Aug 7.50PM"); // TODO: read from schedule
+    bot.telegram.sendMessage(process.env.CHAT_ID, message, Extra.markdown());
     console.log("Sent message");
     sentDates.push(today);
   }
