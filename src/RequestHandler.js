@@ -3,9 +3,9 @@ const markComing = userId => {
   console.log(`${userId} is coming`);
 };
 
-const markNotComing = (userId, reason) => {
+const markNotComing = (userId) => {
   // TODO: save to database & add to original RSVP message
-  console.log(`${userId} is not coming because ${reason}`);
+  console.log(`${userId} is not coming`);
 };
 
 module.exports = {
