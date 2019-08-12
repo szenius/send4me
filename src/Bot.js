@@ -33,12 +33,20 @@ const defaultRsvpMenu = Markup.inlineKeyboard([
 
 bot.action(ACTION_COMING, ctx => {
   if (ctx.update.callback_query.message.message_id !== activeRsvp.messageId) {
-    console.log(`${ctx.from.first_name} (${ctx.from.username}) is trying to RSVP for an old event!`);
+    console.log(
+      `${ctx.from.first_name} (${
+        ctx.from.username
+      }) is trying to RSVP for an old event!`
+    );
     return;
   }
   console.log(`${ctx.from.first_name} (${ctx.from.username}) is coming`);
   if (foundObjectInArray(ctx.from, activeRsvp.coming)) {
-    console.log(`${ctx.from.first_name} (${ctx.from.username}) already said they are coming`);
+    console.log(
+      `${ctx.from.first_name} (${
+        ctx.from.username
+      }) already said they are coming`
+    );
     return;
   } else {
     const matches = removeObjectFromArray(ctx.from, activeRsvp.notComing);
@@ -59,12 +67,20 @@ bot.action(ACTION_COMING, ctx => {
 
 bot.action(ACTION_NOTCOMING, ctx => {
   if (ctx.update.callback_query.message.message_id !== activeRsvp.messageId) {
-    console.log(`${ctx.from.first_name} (${ctx.from.username}) is trying to RSVP for an old event!`);
+    console.log(
+      `${ctx.from.first_name} (${
+        ctx.from.username
+      }) is trying to RSVP for an old event!`
+    );
     return;
   }
   console.log(`${ctx.from.first_name} (${ctx.from.username}) is not coming`);
   if (foundObjectInArray(ctx.from, activeRsvp.notComing)) {
-    console.log(`${ctx.from.first_name} (${ctx.from.username}) already said they are coming`);
+    console.log(
+      `${ctx.from.first_name} (${
+        ctx.from.username
+      }) already said they are coming`
+    );
   } else {
     const matches = removeObjectFromArray(ctx.from, activeRsvp.coming);
     if (matches === undefined || matches.length === 0) {
