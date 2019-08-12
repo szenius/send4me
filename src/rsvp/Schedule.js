@@ -12,12 +12,12 @@ const getEvent = date => {
 // TODO: add deadline
 const events = [
   {
-    date: new Date("August 12 2019 21:57"),
+    date: new Date("August 13 2019 01:18"),
     eventName: "reading session",
     dateString: "this Friday 16 August 8PM"
   },
   {
-    date: new Date("August 12 2019 21:59"),
+    date: new Date("August 13 2019 01:20"),
     eventName: "art session",
     dateString: "this Friday 16 August 9PM"
   }
