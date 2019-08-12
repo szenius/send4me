@@ -1,8 +1,8 @@
-const buildRsvp = (eventName, dateString) => {
-  return `Hi volunteers, the next ${eventName} will be on ${dateString}. Please indicate your attendance below!\n\ncoming:\n\nnot coming(reason):`;
+const buildNewRsvpString = (eventName, dateString) => {
+  return buildRsvpString(eventName, dateString, [], []);
 };
 
-const updateRsvpString = (eventName, dateString, coming, notComing) => {
+const buildRsvpString = (eventName, dateString, coming, notComing) => {
   return `Hi volunteers, the next ${eventName} will be on ${dateString}. Please indicate your attendance below!\n\ncoming:\n${generateUserString(
     coming
   )}\nnot coming(reason):\n${generateUserString(notComing)}`;
@@ -17,6 +17,6 @@ const generateUserString = users => {
 };
 
 module.exports = {
-  buildRsvp,
-  updateRsvpString
+  buildNewRsvpString,
+  buildRsvpString
 };

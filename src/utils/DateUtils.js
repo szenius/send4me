@@ -8,7 +8,7 @@ const savedDate = (newDate, sentDates) => {
 };
 
 const inSchedule = date => {
-  return date.getDate() % 2 != 0; // TODO: read from schedule in database
+  return true; // TODO: read from schedule in database
 };
 
 const isSameDate = (date1, date2) => {
