@@ -4,12 +4,18 @@ const Telegraf = require("telegraf");
 const { Markup } = Telegraf;
 const Promise = require("bluebird");
 
-const { savedDate, inSchedule } = require("./utils/DateUtils.js");
-const { ACTION_COMING, ACTION_NOTCOMING } = require("./constants/Actions.js");
+const { foundDateInArray } = require("./utils/DateUtils.js");
+const { getEvent } = require("./rsvp/Schedule.js");
+const {
+  ACTION_COMING,
+  ACTION_NOTCOMING,
+  MENU_BUTTON_TEXT_COMING,
+  MENU_BUTTON_TEXT_NOTCOMING
+} = require("./constants/Constants.js");
 const {
   buildNewRsvpString,
   buildRsvpString
-} = require("./rsvp/DefaultRsvpBuilder.js");
+} = require("./rsvp/RsvpBuilder.js");
 const {
   foundObjectInArray,
   removeObjectFromArray
@@ -17,28 +23,30 @@ const {
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 
-const sentDates = []; // TODO: save to database
-const coming = [];
-const notComing = [];
-const eventName = "reading session";
-const dateString = "Friday, 23 Aug 7.50PM";
+let activeRsvp = null;
+const sentDates = [];
 
 const defaultRsvpMenu = Markup.inlineKeyboard([
-  Markup.callbackButton("coming", ACTION_COMING),
-  Markup.callbackButton("not coming", ACTION_NOTCOMING)
+  Markup.callbackButton(MENU_BUTTON_TEXT_COMING, ACTION_COMING),
+  Markup.callbackButton(MENU_BUTTON_TEXT_NOTCOMING, ACTION_NOTCOMING)
 ]).extra();
 
 bot.action(ACTION_COMING, ctx => {
   console.log(`${ctx.from.first_name} is coming`);
-  if (foundObjectInArray(ctx.from, coming)) {
+  if (foundObjectInArray(ctx.from, activeRsvp.coming)) {
     console.log(`${ctx.from.first_name} already said they are coming`);
     return;
   } else {
-    const matches = removeObjectFromArray(ctx.from, notComing);
+    const matches = removeObjectFromArray(ctx.from, activeRsvp.notComing);
     if (matches === undefined || matches.length === 0) {
-      coming.push(ctx.from);
+      activeRsvp.coming.push(ctx.from);
       ctx.editMessageText(
-        buildRsvpString(eventName, dateString, coming, notComing),
+        buildRsvpString(
+          activeRsvp.eventName,
+          activeRsvp.dateString,
+          activeRsvp.coming,
+          activeRsvp.notComing
+        ),
         defaultRsvpMenu
       );
     }
@@ -47,14 +55,19 @@ bot.action(ACTION_COMING, ctx => {
 
 bot.action(ACTION_NOTCOMING, ctx => {
   console.log(`${ctx.from.first_name} is not coming`);
-  if (foundObjectInArray(ctx.from, notComing)) {
+  if (foundObjectInArray(ctx.from, activeRsvp.notComing)) {
     console.log(`${ctx.from.first_name} already said they are coming`);
   } else {
-    const matches = removeObjectFromArray(ctx.from, coming);
+    const matches = removeObjectFromArray(ctx.from, activeRsvp.coming);
     if (matches === undefined || matches.length === 0) {
-      notComing.push(ctx.from);
+      activeRsvp.notComing.push(ctx.from);
       ctx.editMessageText(
-        buildRsvpString(eventName, dateString, coming, notComing),
+        buildRsvpString(
+          activeRsvp.eventName,
+          activeRsvp.dateString,
+          activeRsvp.coming,
+          activeRsvp.notComing
+        ),
         defaultRsvpMenu
       );
     }
@@ -62,14 +75,25 @@ bot.action(ACTION_NOTCOMING, ctx => {
 });
 
 const run = () => {
-  const today = new Date();
   console.log("Checking if should send message...");
-  if (inSchedule(today) && !savedDate(today, sentDates)) {
+  const scheduledEvent = getEvent(new Date());
+  if (
+    scheduledEvent !== null &&
+    !foundDateInArray(scheduledEvent.date, sentDates)
+  ) {
     console.log("Sending message...");
-    const message = buildNewRsvpString(eventName, dateString); // TODO: read from schedule
+    const message = buildNewRsvpString(
+      scheduledEvent.eventName,
+      scheduledEvent.dateString
+    );
     bot.telegram.sendMessage(process.env.CHAT_ID, message, defaultRsvpMenu);
     console.log("Sent message");
-    sentDates.push(today);
+    activeRsvp = {
+      ...scheduledEvent,
+      coming: [],
+      notComing: []
+    };
+    sentDates.push(activeRsvp.date);
   }
   return Promise.delay(5000).then(() => run()); // TODO: increase delay
 };
