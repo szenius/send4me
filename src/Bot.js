@@ -4,7 +4,7 @@ const Telegraf = require("telegraf");
 const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 
-const { foundDateInArray } = require("./utils/DateUtils.js");
+const { foundDateInArray, isSameDate } = require("./utils/DateUtils.js");
 const { getEvent } = require("./rsvp/Schedule.js");
 const {
   ACTION_COMING,
@@ -101,29 +101,12 @@ bot.action(ACTION_NOTCOMING, ctx => {
 
 const run = () => {
   console.log("Checking if should send message...");
-  const scheduledEvent = getEvent(new Date());
+  const now = new Date();
+  const scheduledEvent = getEvent(now);
   if (
     scheduledEvent !== null &&
     !foundDateInArray(scheduledEvent.date, sentDates)
   ) {
-    // Disable previous RSVP
-    if (activeRsvp !== null) {
-      bot.telegram.editMessageText(
-        process.env.CHAT_ID,
-        activeRsvp.messageId,
-        activeRsvp.messageId,
-        addDisabledRsvpHeader(
-          buildRsvpString(
-            activeRsvp.eventName,
-            activeRsvp.dateString,
-            activeRsvp.coming,
-            activeRsvp.notComing
-          )
-        ),
-        Extra.markdown()
-      );
-    }
-    // Send new RSVP
     console.log("Sending message...");
     const message = buildNewRsvpString(
       scheduledEvent.eventName,
@@ -140,10 +123,26 @@ const run = () => {
         bot.telegram.pinChatMessage(process.env.CHAT_ID, m.message_id);
         activeRsvp.messageId = m.message_id;
         console.log(`Sent message with id ${activeRsvp.messageId}`);
-        console.log(m);
-        console.log(JSON.stringify(m));
       }); // TODO: handle promise rejection
     sentDates.push(activeRsvp.date);
+  }
+  console.log("Checking if should disable old RSVPs...");
+  if (activeRsvp !== null && isSameDate(activeRsvp.deadline, now)) {
+    bot.telegram.editMessageText(
+      process.env.CHAT_ID,
+      activeRsvp.messageId,
+      activeRsvp.messageId,
+      addDisabledRsvpHeader(
+        buildRsvpString(
+          activeRsvp.eventName,
+          activeRsvp.dateString,
+          activeRsvp.coming,
+          activeRsvp.notComing
+        )
+      ),
+      Extra.markdown()
+    );
+    activeRsvp = null;
   }
   return Promise.delay(5000).then(() => run()); // TODO: increase delay
 };
