@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const Telegraf = require("telegraf");
-const { Markup } = Telegraf;
+const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 
 const { foundDateInArray } = require("./utils/DateUtils.js");
@@ -14,7 +14,8 @@ const {
 } = require("./constants/Constants.js");
 const {
   buildNewRsvpString,
-  buildRsvpString
+  buildRsvpString,
+  addDisabledRsvpHeader
 } = require("./rsvp/RsvpBuilder.js");
 const {
   foundObjectInArray,
@@ -105,6 +106,24 @@ const run = () => {
     scheduledEvent !== null &&
     !foundDateInArray(scheduledEvent.date, sentDates)
   ) {
+    // Disable previous RSVP
+    if (activeRsvp !== null) {
+      bot.telegram.editMessageText(
+        process.env.CHAT_ID,
+        activeRsvp.messageId,
+        activeRsvp.messageId,
+        addDisabledRsvpHeader(
+          buildRsvpString(
+            activeRsvp.eventName,
+            activeRsvp.dateString,
+            activeRsvp.coming,
+            activeRsvp.notComing
+          )
+        ),
+        Extra.markdown()
+      );
+    }
+    // Send new RSVP
     console.log("Sending message...");
     const message = buildNewRsvpString(
       scheduledEvent.eventName,
@@ -121,6 +140,8 @@ const run = () => {
         bot.telegram.pinChatMessage(process.env.CHAT_ID, m.message_id);
         activeRsvp.messageId = m.message_id;
         console.log(`Sent message with id ${activeRsvp.messageId}`);
+        console.log(m);
+        console.log(JSON.stringify(m));
       }); // TODO: handle promise rejection
     sentDates.push(activeRsvp.date);
   }
