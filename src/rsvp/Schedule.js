@@ -9,7 +9,6 @@ const getEvent = date => {
   return null;
 };
 
-// TODO: add deadline
 const events = [
   {
     date: new Date("August 13 2019 22:28"),
