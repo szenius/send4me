@@ -11,16 +11,16 @@ const getEvent = date => {
 
 const events = [
   {
-    date: new Date("August 13 2019 22:28"),
+    date: new Date("August 13 2019 22:42"),
     eventName: "reading session",
     dateString: "this Friday 16 August 8PM",
-    deadline: new Date("August 13 2019 22:29")
+    deadline: new Date("August 13 2019 22:43")
   },
   {
-    date: new Date("August 13 2019 22:26"),
+    date: new Date("August 13 2019 22:44"),
     eventName: "art session",
     dateString: "this Friday 16 August 9PM",
-    deadline: new Date("August 14 2019 22:27")
+    deadline: new Date("August 13 2019 22:45")
   }
 ];
 

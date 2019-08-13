@@ -99,6 +99,24 @@ bot.action(ACTION_NOTCOMING, ctx => {
   }
 });
 
+const disableOldRsvp = () => {
+  bot.telegram.editMessageText(
+    process.env.CHAT_ID,
+    activeRsvp.messageId,
+    activeRsvp.messageId,
+    addDisabledRsvpHeader(
+      buildRsvpString(
+        activeRsvp.eventName,
+        activeRsvp.dateString,
+        activeRsvp.coming,
+        activeRsvp.notComing
+      )
+    ),
+    Extra.markdown()
+  );
+  activeRsvp = null;
+};
+
 const run = () => {
   console.log("Checking if should send message...");
   const now = new Date();
@@ -107,6 +125,9 @@ const run = () => {
     scheduledEvent !== null &&
     !foundDateInArray(scheduledEvent.date, sentDates)
   ) {
+    if (activeRsvp !== null) {
+      disableOldRsvp();
+    }
     console.log("Sending message...");
     const message = buildNewRsvpString(
       scheduledEvent.eventName,
@@ -128,21 +149,7 @@ const run = () => {
   }
   console.log("Checking if should disable old RSVPs...");
   if (activeRsvp !== null && isSameDate(activeRsvp.deadline, now)) {
-    bot.telegram.editMessageText(
-      process.env.CHAT_ID,
-      activeRsvp.messageId,
-      activeRsvp.messageId,
-      addDisabledRsvpHeader(
-        buildRsvpString(
-          activeRsvp.eventName,
-          activeRsvp.dateString,
-          activeRsvp.coming,
-          activeRsvp.notComing
-        )
-      ),
-      Extra.markdown()
-    );
-    activeRsvp = null;
+    disableOldRsvp();
   }
   return Promise.delay(5000).then(() => run()); // TODO: increase delay
 };
