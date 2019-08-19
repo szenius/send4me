@@ -1,12 +1,10 @@
 const { isSameDate } = require("../utils/date_utils.js/index.js");
 
+// Assumes that events are of unique dates
 const getEvent = date => {
-  for (const scheduledEvent of events) {
-    if (isSameDate(date, scheduledEvent.date)) {
-      return scheduledEvent;
-    }
-  }
-  return null;
+  return events.find(event => {
+    isSameDate(date, event.date);
+  });
 };
 
 const events = [
