@@ -7,6 +7,8 @@ const getEvent = date => {
   });
 };
 
+// TODO: Populate with actual schedule
+// TODO: Migrate to database
 const events = [
   {
     date: new Date("August 20 2019 10:00"),
