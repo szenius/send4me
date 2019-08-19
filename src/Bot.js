@@ -4,23 +4,23 @@ const Telegraf = require("telegraf");
 const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 
-const { foundDateInArray, isSameDate } = require("./utils/DateUtils.js");
-const { getEvent } = require("./rsvp/Schedule.js");
+const { foundDateInArray, isSameDate } = require("./utils/date_utils.js/index.js");
+const { getEvent } = require("./rsvp/schedule.js");
 const {
   ACTION_COMING,
   ACTION_NOT_COMING,
   MENU_BUTTON_TEXT_COMING,
   MENU_BUTTON_TEXT_NOT_COMING
-} = require("./constants/Constants.js");
+} = require("./constants/constants.js");
 const {
   buildNewRsvpString,
   buildRsvpString,
   addDisabledRsvpHeader
-} = require("./rsvp/RsvpBuilder.js");
+} = require("./rsvp/rsvp_builder.js/index.js");
 const {
   foundObjectInArray,
   removeObjectFromArray
-} = require("./utils/ArrayUtils.js");
+} = require("./utils/array_utils.js/index.js");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 

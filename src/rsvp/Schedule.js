@@ -1,4 +1,4 @@
-const { isSameDate } = require("../utils/DateUtils.js");
+const { isSameDate } = require("../utils/date_utils.js/index.js");
 
 const getEvent = date => {
   for (const scheduledEvent of events) {
