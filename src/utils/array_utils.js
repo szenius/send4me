@@ -1,12 +1,12 @@
-const _ = require("lodash");
+const {isEqual, some, remove} = require("lodash");
 
 const foundObjectInArray = (obj, arr) => {
-  return _.some(arr, obj);
+  return some(arr, obj);
 };
 
 const removeObjectFromArray = (obj, arr) => {
-  _.remove(arr, function(item) {
-    return _.isEqual(item, obj);
+  remove(arr, function(item) {
+    return isEqual(item, obj);
   });
 };
 
