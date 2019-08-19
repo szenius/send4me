@@ -8,9 +8,9 @@ const { foundDateInArray, isSameDate } = require("./utils/DateUtils.js");
 const { getEvent } = require("./rsvp/Schedule.js");
 const {
   ACTION_COMING,
-  ACTION_NOTCOMING,
+  ACTION_NOT_COMING,
   MENU_BUTTON_TEXT_COMING,
-  MENU_BUTTON_TEXT_NOTCOMING
+  MENU_BUTTON_TEXT_NOT_COMING
 } = require("./constants/Constants.js");
 const {
   buildNewRsvpString,
@@ -29,7 +29,7 @@ const sentDates = [];
 
 const defaultRsvpMenu = Markup.inlineKeyboard([
   Markup.callbackButton(MENU_BUTTON_TEXT_COMING, ACTION_COMING),
-  Markup.callbackButton(MENU_BUTTON_TEXT_NOTCOMING, ACTION_NOTCOMING)
+  Markup.callbackButton(MENU_BUTTON_TEXT_NOT_COMING, ACTION_NOT_COMING)
 ]).extra();
 
 bot.action(ACTION_COMING, ctx => {
@@ -66,7 +66,7 @@ bot.action(ACTION_COMING, ctx => {
   }
 });
 
-bot.action(ACTION_NOTCOMING, ctx => {
+bot.action(ACTION_NOT_COMING, ctx => {
   if (ctx.update.callback_query.message.message_id !== activeRsvp.messageId) {
     console.log(
       `${ctx.from.first_name} (${
