@@ -1,9 +1,5 @@
 const foundDateInArray = (newDate, sentDates) => {
-  return (
-    sentDates.find(sentDate => {
-      isSameDate(sentDate, newDate);
-    })
-  );
+  return sentDates.find(sentDate => isSameDate(sentDate, newDate));
 };
 
 const isSameDate = (date1, date2) => {

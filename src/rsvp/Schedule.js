@@ -1,15 +1,21 @@
-const { isSameDate } = require("../utils/date_utils.js/index.js");
+const { isSameDate } = require("../utils/date_utils.js");
 
 // Assumes that events are of unique dates
 const getEvent = date => {
-  return events.find(event => {
-    isSameDate(date, event.date);
-  });
+  return events.find(event => 
+    isSameDate(date, event.date)
+  );
 };
 
 // TODO: Populate with actual schedule
 // TODO: Migrate to database
 const events = [
+  {
+    date: new Date("August 20 2019 00:22"),
+    eventName: "reading session",
+    dateString: "this Friday 23 August 7.50PM",
+    deadline: new Date("August 23 2019 20:00")
+  },
   {
     date: new Date("August 20 2019 10:00"),
     eventName: "reading session",

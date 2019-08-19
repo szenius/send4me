@@ -4,7 +4,7 @@ const Telegraf = require("telegraf");
 const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 
-const { foundDateInArray, isSameDate } = require("./utils/date_utils.js/index.js");
+const { foundDateInArray, isSameDate } = require("./utils/date_utils.js");
 const { getEvent } = require("./rsvp/schedule.js");
 const {
   ACTION_COMING,
@@ -16,11 +16,11 @@ const {
   buildNewRsvpString,
   buildRsvpString,
   addDisabledRsvpHeader
-} = require("./rsvp/rsvp_builder.js/index.js");
+} = require("./rsvp/rsvp_builder.js");
 const {
   foundObjectInArray,
   removeObjectFromArray
-} = require("./utils/array_utils.js/index.js");
+} = require("./utils/array_utils.js");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 
@@ -122,10 +122,10 @@ const run = () => {
   const now = new Date();
   const scheduledEvent = getEvent(now);
   if (
-    scheduledEvent !== null &&
+    scheduledEvent &&
     !foundDateInArray(scheduledEvent.date, sentDates)
   ) {
-    if (activeRsvp !== null) {
+    if (activeRsvp) {
       disableOldRsvp();
     }
     console.log("Sending message...");
@@ -148,7 +148,7 @@ const run = () => {
     sentDates.push(activeRsvp.date);
   }
   console.log("Checking if should disable old RSVPs...");
-  if (activeRsvp !== null && isSameDate(activeRsvp.deadline, now)) {
+  if (activeRsvp && isSameDate(activeRsvp.deadline, now)) {
     disableOldRsvp();
   }
   return Promise.delay(5000).then(() => run()); // TODO: increase delay
