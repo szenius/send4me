@@ -1,10 +1,9 @@
 const foundDateInArray = (newDate, sentDates) => {
-  for (const sentDate of sentDates) {
-    if (isSameDate(sentDate, newDate)) {
-      return true;
-    }
-  }
-  return false;
+  return (
+    sentDates.find(sentDate => {
+      isSameDate(sentDate, newDate);
+    })
+  );
 };
 
 const isSameDate = (date1, date2) => {
@@ -19,5 +18,5 @@ const isSameDate = (date1, date2) => {
 
 module.exports = {
   foundDateInArray,
-  isSameDate,
+  isSameDate
 };
