@@ -34,7 +34,7 @@ const defaultRsvpMenu = Markup.inlineKeyboard([
 
 bot.action(ACTION_COMING, ctx => {
   if (!activeRsvp) {
-    console.log('No active RSVP is present. Perhaps the bot crashed?');
+    console.log("No active RSVP is present. Perhaps the bot crashed?");
     return;
   }
   activeRsvp.coming = activeRsvp.coming ? activeRsvp.coming : [];
@@ -54,24 +54,16 @@ bot.action(ACTION_COMING, ctx => {
         ctx.from.username
       }) already said they are coming`
     );
-  } else {
-    removeObjectFromArray(ctx.from, activeRsvp.notComing);
-    activeRsvp.coming.push(ctx.from);
-    ctx.editMessageText(
-      buildRsvpString(
-        activeRsvp.eventName,
-        activeRsvp.dateString,
-        activeRsvp.coming,
-        activeRsvp.notComing
-      ),
-      defaultRsvpMenu
-    );
+    return;
   }
+  removeObjectFromArray(ctx.from, activeRsvp.notComing);
+  activeRsvp.coming.push(ctx.from);
+  updateRsvpMessage(ctx);
 });
 
 bot.action(ACTION_NOT_COMING, ctx => {
   if (!activeRsvp) {
-    console.log('No active RSVP is present. Perhaps the bot crashed?');
+    console.log("No active RSVP is present. Perhaps the bot crashed?");
     return;
   }
   activeRsvp.coming = activeRsvp.coming ? activeRsvp.coming : [];
@@ -82,6 +74,7 @@ bot.action(ACTION_NOT_COMING, ctx => {
         ctx.from.username
       }) is trying to RSVP for an old event!`
     );
+    return;
   }
   console.log(`${ctx.from.first_name} (${ctx.from.username}) is not coming`);
   if (foundObjectInArray(ctx.from, activeRsvp.notComing)) {
@@ -90,19 +83,11 @@ bot.action(ACTION_NOT_COMING, ctx => {
         ctx.from.username
       }) already said they are coming`
     );
-  } else {
-    removeObjectFromArray(ctx.from, activeRsvp.coming);
-    activeRsvp.notComing.push(ctx.from);
-    ctx.editMessageText(
-      buildRsvpString(
-        activeRsvp.eventName,
-        activeRsvp.dateString,
-        activeRsvp.coming,
-        activeRsvp.notComing
-      ),
-      defaultRsvpMenu
-    );
+    return;
   }
+  removeObjectFromArray(ctx.from, activeRsvp.coming);
+  activeRsvp.notComing.push(ctx.from);
+  updateRsvpMessage(ctx);
 });
 
 const disableOldRsvp = () => {
@@ -121,6 +106,18 @@ const disableOldRsvp = () => {
     Extra.markdown()
   );
   activeRsvp = null;
+};
+
+const updateRsvpMessage = ctx => {
+  ctx.editMessageText(
+    buildRsvpString(
+      activeRsvp.eventName,
+      activeRsvp.dateString,
+      activeRsvp.coming,
+      activeRsvp.notComing
+    ),
+    defaultRsvpMenu
+  );
 };
 
 const run = () => {
