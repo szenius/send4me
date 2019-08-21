@@ -136,7 +136,7 @@ const disableOldRsvp = () => {
 
 /**
  * Update message for active RSVP.
- * @param {*} ctx 
+ * @param {*} ctx
  */
 const updateRsvpMessage = ctx => {
   ctx.editMessageText(

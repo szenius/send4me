@@ -2,9 +2,7 @@ const { isSameDate } = require("../utils/date_utils.js");
 
 // Assumes that events are of unique dates
 const getEvent = date => {
-  return events.find(event => 
-    isSameDate(date, event.date)
-  );
+  return events.find(event => isSameDate(date, event.date));
 };
 
 // TODO: Populate with actual schedule

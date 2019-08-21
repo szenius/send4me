@@ -1,4 +1,4 @@
-const {isEqual, some, remove} = require("lodash");
+const { isEqual, some, remove } = require("lodash");
 
 const foundObjectInArray = (obj, arr) => {
   return some(arr, obj);
