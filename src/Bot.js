@@ -33,6 +33,12 @@ const defaultRsvpMenu = Markup.inlineKeyboard([
 ]).extra();
 
 bot.action(ACTION_COMING, ctx => {
+  if (!activeRsvp) {
+    console.log('No active RSVP is present. Perhaps the bot crashed?');
+    return;
+  }
+  activeRsvp.coming = activeRsvp.coming ? activeRsvp.coming : [];
+  activeRsvp.notComing = activeRsvp.notComing ? activeRsvp.notComing : [];
   if (ctx.update.callback_query.message.message_id !== activeRsvp.messageId) {
     console.log(
       `${ctx.from.first_name} (${
@@ -64,6 +70,12 @@ bot.action(ACTION_COMING, ctx => {
 });
 
 bot.action(ACTION_NOT_COMING, ctx => {
+  if (!activeRsvp) {
+    console.log('No active RSVP is present. Perhaps the bot crashed?');
+    return;
+  }
+  activeRsvp.coming = activeRsvp.coming ? activeRsvp.coming : [];
+  activeRsvp.notComing = activeRsvp.notComing ? activeRsvp.notComing : [];
   if (ctx.update.callback_query.message.message_id !== activeRsvp.messageId) {
     console.log(
       `${ctx.from.first_name} (${
