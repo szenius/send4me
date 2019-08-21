@@ -28,6 +28,5 @@ const generateUserString = users => {
 module.exports = {
   buildNewRsvpString,
   buildRsvpString,
-  addDisabledRsvpHeader,
   buildDisabledRsvpString
 };
