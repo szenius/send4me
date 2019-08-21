@@ -12,12 +12,9 @@ const buildRsvpString = (eventName, dateString, coming, notComing) => {
 };
 
 const buildDisabledRsvpString = (eventName, dateString, coming, notComing) => {
-  const rsvpString = buildRsvpString(eventName, dateString, coming, notComing);
-  return addDisabledRsvpHeader(rsvpString);
-};
-
-const addDisabledRsvpHeader = rsvpString => {
-  return "*RSVP HAS CLOSED.*\n\n" + rsvpString;
+  return `*RSVP HAS CLOSED.*\n
+  \n
+  ${buildRsvpString(eventName, dateString, coming, notComing)}`;
 };
 
 const generateUserString = users => {
