@@ -48,21 +48,18 @@ bot.action(ACTION_COMING, ctx => {
         ctx.from.username
       }) already said they are coming`
     );
-    return;
   } else {
-    const matches = removeObjectFromArray(ctx.from, activeRsvp.notComing);
-    if (matches === undefined || matches.length === 0) {
-      activeRsvp.coming.push(ctx.from);
-      ctx.editMessageText(
-        buildRsvpString(
-          activeRsvp.eventName,
-          activeRsvp.dateString,
-          activeRsvp.coming,
-          activeRsvp.notComing
-        ),
-        defaultRsvpMenu
-      );
-    }
+    removeObjectFromArray(ctx.from, activeRsvp.notComing);
+    activeRsvp.coming.push(ctx.from);
+    ctx.editMessageText(
+      buildRsvpString(
+        activeRsvp.eventName,
+        activeRsvp.dateString,
+        activeRsvp.coming,
+        activeRsvp.notComing
+      ),
+      defaultRsvpMenu
+    );
   }
 });
 
@@ -73,7 +70,6 @@ bot.action(ACTION_NOT_COMING, ctx => {
         ctx.from.username
       }) is trying to RSVP for an old event!`
     );
-    return;
   }
   console.log(`${ctx.from.first_name} (${ctx.from.username}) is not coming`);
   if (foundObjectInArray(ctx.from, activeRsvp.notComing)) {
@@ -83,19 +79,17 @@ bot.action(ACTION_NOT_COMING, ctx => {
       }) already said they are coming`
     );
   } else {
-    const matches = removeObjectFromArray(ctx.from, activeRsvp.coming);
-    if (matches === undefined || matches.length === 0) {
-      activeRsvp.notComing.push(ctx.from);
-      ctx.editMessageText(
-        buildRsvpString(
-          activeRsvp.eventName,
-          activeRsvp.dateString,
-          activeRsvp.coming,
-          activeRsvp.notComing
-        ),
-        defaultRsvpMenu
-      );
-    }
+    removeObjectFromArray(ctx.from, activeRsvp.coming);
+    activeRsvp.notComing.push(ctx.from);
+    ctx.editMessageText(
+      buildRsvpString(
+        activeRsvp.eventName,
+        activeRsvp.dateString,
+        activeRsvp.coming,
+        activeRsvp.notComing
+      ),
+      defaultRsvpMenu
+    );
   }
 });
 
@@ -121,10 +115,7 @@ const run = () => {
   console.log("Checking if should send message...");
   const now = new Date();
   const scheduledEvent = getEvent(now);
-  if (
-    scheduledEvent &&
-    !foundDateInArray(scheduledEvent.date, sentDates)
-  ) {
+  if (scheduledEvent && !foundDateInArray(scheduledEvent.date, sentDates)) {
     if (activeRsvp) {
       disableOldRsvp();
     }
