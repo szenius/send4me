@@ -3,13 +3,21 @@ const buildNewRsvpString = (eventName, dateString) => {
 };
 
 const buildRsvpString = (eventName, dateString, coming, notComing) => {
-  return `Hi volunteers, the next ${eventName} will be on ${dateString}. Please indicate your attendance below!\n\ncoming:\n${generateUserString(
-    coming
-  )}\nnot coming(reason):\n${generateUserString(notComing)}`;
+  return `Hi volunteers, the next ${eventName} will be on ${dateString}. Please indicate your attendance below!\n
+  \n
+  coming:\n
+  ${generateUserString(coming)}\n
+  not coming(reason):\n
+  ${generateUserString(notComing)}`;
 };
 
-const addDisabledRsvpHeader = (rsvpString) => {
-  return '*RSVP HAS CLOSED.*\n\n' + rsvpString;
+const buildDisabledRsvpString = (eventName, dateString, coming, notComing) => {
+  const rsvpString = buildRsvpString(eventName, dateString, coming, notComing);
+  return addDisabledRsvpHeader(rsvpString);
+};
+
+const addDisabledRsvpHeader = rsvpString => {
+  return "*RSVP HAS CLOSED.*\n\n" + rsvpString;
 };
 
 const generateUserString = users => {
@@ -24,4 +32,5 @@ module.exports = {
   buildNewRsvpString,
   buildRsvpString,
   addDisabledRsvpHeader,
+  buildDisabledRsvpString
 };

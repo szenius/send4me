@@ -15,7 +15,7 @@ const {
 const {
   buildNewRsvpString,
   buildRsvpString,
-  addDisabledRsvpHeader
+  buildDisabledRsvpString
 } = require("./rsvp/rsvp_builder.js");
 const {
   foundObjectInArray,
