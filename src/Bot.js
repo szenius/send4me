@@ -5,7 +5,7 @@ const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 
 const { foundDateInArray, isSameDate } = require("./utils/date_utils.js");
-const { getEvent } = require("./rsvp/schedule.js");
+const { getEvent } = require("rsvp/schedule.js");
 const {
   ACTION_COMING,
   ACTION_NOT_COMING,

@@ -9,7 +9,7 @@
     "telegraf-inline-menu": "^3.6.0"
   },
   "scripts": {
-    "start": "npm install && node src/Bot.js",
+    "start": "node src/bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
