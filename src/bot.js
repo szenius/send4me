@@ -11,7 +11,7 @@ const {
   ACTION_NOT_COMING,
   MENU_BUTTON_TEXT_COMING,
   MENU_BUTTON_TEXT_NOT_COMING
-} = require("./constants/constants.js/index.js.js");
+} = require("./constants/constants.js");
 const {
   buildNewRsvpString,
   buildRsvpString,
