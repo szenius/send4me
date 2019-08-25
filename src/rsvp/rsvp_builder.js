@@ -3,17 +3,17 @@ const buildNewRsvpString = (eventName, dateString) => {
 };
 
 const buildRsvpString = (eventName, dateString, coming, notComing) => {
-  return `Hi volunteers, the next ${eventName} will be on ${dateString}. Please indicate your attendance below!\n
-  \n
-  coming:\n
-  ${generateUserString(coming)}\n
-  not coming(reason):\n
+  return `Hi volunteers, the next ${eventName} will be on ${dateString}. Please indicate your attendance below!
+  
+  coming:
+  ${generateUserString(coming)}
+  not coming(reason):
   ${generateUserString(notComing)}`;
 };
 
 const buildDisabledRsvpString = (eventName, dateString, coming, notComing) => {
-  return `*RSVP HAS CLOSED.*\n
-  \n
+  return `*RSVP HAS CLOSED.*
+  
   ${buildRsvpString(eventName, dateString, coming, notComing)}`;
 };
 
