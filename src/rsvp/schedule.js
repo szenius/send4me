@@ -9,10 +9,10 @@ const getEvent = date => {
 // TODO: Migrate to database
 const events = [
   {
-    date: new Date("August 25 2019 23:25"),
+    date: new Date("August 25 2019 23:35"),
     eventName: "test event",
     dateString: "test date",
-    deadline: new Date("August 25 2019 23:30")
+    deadline: new Date("August 25 2019 23:45")
   },
   {
     date: new Date("August 26 2019 10:00"),

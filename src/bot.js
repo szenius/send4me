@@ -198,7 +198,7 @@ const run = () => {
   if (activeRsvp && isSameDate(activeRsvp.deadline, now)) {
     disableOldRsvp();
   }
-  return Promise.delay(5000).then(() => run()); // TODO: increase delay
+  return Promise.delay(360000).then(() => run()); // Run listener every 1 hour
 };
 
 bot.launch();
