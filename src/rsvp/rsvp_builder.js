@@ -17,7 +17,7 @@ const buildDisabledRsvpString = (eventName, dateString, coming, notComing) => {
 
 const generateUserStringFromMap = map => {
   let userString = "";
-  map.forEach((value, key) => {
+  map.forEach((value) => {
     userString += `${value.first_name}${value.reason || ""}\n`;
   });
   return userString;

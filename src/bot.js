@@ -89,9 +89,9 @@ bot.action(ACTION_COMING, ctx => {
     );
     return;
   }
-  console.log(`${ctx.from.first_name} (${ctx.from.username}) is coming`);
 
   // Mark user as coming.
+  console.log(`${ctx.from.first_name} (${ctx.from.username}) is coming`);
   activeRsvp.notComing.delete(ctx.from.id);
   activeRsvp.coming.set(ctx.from.id, ctx.from);
   updateRsvpMessage(ctx);
@@ -141,13 +141,13 @@ const executeNotComingAction = (ctx, action, reason) => {
     );
     return;
   }
+
+  // If user has already said they will not come, update the reason.
   console.log(
     `${ctx.from.first_name} (${ctx.from.username}) is ${getMenuButtonText(
       action
     )}`
   );
-
-  // If user has already said they will not come, update the reason.
   activeRsvp.coming.delete(ctx.from.id);
   activeRsvp.notComing.delete(ctx.from.id);
   activeRsvp.notComing.set(ctx.from.id, { ...ctx.from, reason });
@@ -159,18 +159,20 @@ const executeNotComingAction = (ctx, action, reason) => {
  * This is necessary for our current assumption that there can only be one active RSVP at any point in time.
  */
 const disableOldRsvp = () => {
-  bot.telegram.editMessageText(
-    process.env.CHAT_ID,
-    activeRsvp.messageId,
-    activeRsvp.messageId,
-    buildDisabledRsvpString(
-      activeRsvp.eventName,
-      activeRsvp.dateString,
-      activeRsvp.coming,
-      activeRsvp.notComing
-    ),
-    Extra.markdown()
-  );
+  bot.telegram
+    .editMessageText(
+      process.env.CHAT_ID,
+      activeRsvp.messageId,
+      activeRsvp.messageId,
+      buildDisabledRsvpString(
+        activeRsvp.eventName,
+        activeRsvp.dateString,
+        activeRsvp.coming,
+        activeRsvp.notComing
+      ),
+      Extra.markdown()
+    )
+    .catch(err => console.log(err));
   activeRsvp = null;
 };
 
@@ -179,15 +181,17 @@ const disableOldRsvp = () => {
  * @param {*} ctx
  */
 const updateRsvpMessage = ctx => {
-  ctx.editMessageText(
-    buildRsvpString(
-      activeRsvp.eventName,
-      activeRsvp.dateString,
-      activeRsvp.coming,
-      activeRsvp.notComing
-    ),
-    defaultRsvpMenu
-  );
+  ctx
+    .editMessageText(
+      buildRsvpString(
+        activeRsvp.eventName,
+        activeRsvp.dateString,
+        activeRsvp.coming,
+        activeRsvp.notComing
+      ),
+      defaultRsvpMenu
+    )
+    .catch(err => console.log(err));
 };
 
 /**
@@ -200,7 +204,6 @@ const run = () => {
   https.get(process.env.HEROKU_APP_URL);
 
   // Send message
-  console.log("Checking if should send message...");
   const now = new Date();
   const scheduledEvent = getEvent(now);
   if (scheduledEvent && !foundDateInArray(scheduledEvent.date, sentDates)) {
@@ -214,7 +217,6 @@ const run = () => {
       notComing: new Map()
     };
     // Send out new RSVP
-    console.log("Sending message...");
     const message = buildNewRsvpString(
       scheduledEvent.eventName,
       scheduledEvent.dateString
@@ -225,16 +227,17 @@ const run = () => {
         bot.telegram.pinChatMessage(process.env.CHAT_ID, m.message_id);
         activeRsvp.messageId = m.message_id;
         console.log(`Sent message with id ${activeRsvp.messageId}`);
-      }); // TODO: handle promise rejection
+      })
+      .catch(err => console.log(err));
     sentDates.push(activeRsvp.date);
   }
 
   // Disable old RSVPs
-  console.log("Checking if should disable old RSVPs...");
   if (activeRsvp && isSameDate(activeRsvp.deadline, now)) {
+    console.log(`Disabling old RSVP ${activeRsvp.messageId}`);
     disableOldRsvp();
   }
-  return Promise.delay(5000).then(() => run()); // TODO: increase delay
+  return Promise.delay(process.env.RUN_INTERVAL).then(() => run());
 };
 
 bot.launch();

@@ -9,16 +9,46 @@ const getEvent = date => {
 // TODO: Migrate to database
 const events = [
   {
-    date: new Date("September 8 2019 13:56 GMT+08:00"),
-    eventName: "test event 1",
-    dateString: "test date 1",
-    deadline: new Date("September 8 2019 14:00 GMT+08:00"),
+    date: new Date("September 8 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 8 2019 22:00 GMT+08:00"),
   },
   {
-    date: new Date("September 8 2019 12:30 GMT+08:00"),
-    eventName: "test event 2",
-    dateString: "test date 2",
-    deadline: new Date("September 8 2019 12:40 GMT+08:00"),
+    date: new Date("September 9 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 9 2019 22:00 GMT+08:00"),
+  },
+  {
+    date: new Date("September 10 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 10 2019 22:00 GMT+08:00"),
+  },
+  {
+    date: new Date("September 11 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 11 2019 22:00 GMT+08:00"),
+  },
+  {
+    date: new Date("September 12 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 12 2019 22:00 GMT+08:00"),
+  },
+  {
+    date: new Date("September 13 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 13 2019 22:00 GMT+08:00"),
+  },
+  {
+    date: new Date("September 14 2019 21:00 GMT+08:00"),
+    eventName: "test event",
+    dateString: "today 10PM",
+    deadline: new Date("September 14 2019 22:00 GMT+08:00"),
   },
   {
     date: new Date("September 17 2019 10:00 GMT+08:00"),
