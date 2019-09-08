@@ -1,5 +1,5 @@
 const buildNewRsvpString = (eventName, dateString) => {
-  return buildRsvpString(eventName, dateString, [], new Map());
+  return buildRsvpString(eventName, dateString, new Map(), new Map());
 };
 
 const buildRsvpString = (eventName, dateString, coming, notComing) => {

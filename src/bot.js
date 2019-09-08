@@ -42,10 +42,8 @@ const sentDates = [];
  * Check if coming and notcoming maps are present in activeRSVP. If not, set to empty maps.
  */
 const initAttendanceMapsIfNotExist = () => {
-  activeRsvp.coming = activeRsvp.coming ? activeRsvp.coming : new Map();
-  activeRsvp.notComing = activeRsvp.notComing
-    ? activeRsvp.notComing
-    : new Map();
+  activeRsvp.coming = activeRsvp.coming || new Map();
+  activeRsvp.notComing = activeRsvp.notComing || new Map();
 };
 
 /**
@@ -144,9 +142,7 @@ const executeNotComingAction = (ctx, action, reason) => {
 
   // If user has already said they will not come, update the reason.
   console.log(
-    `${ctx.from.first_name} (${ctx.from.username}) is ${getMenuButtonText(
-      action
-    )}`
+    `${ctx.from.first_name} (${ctx.from.username}) is not coming (${reason})`
   );
   activeRsvp.coming.delete(ctx.from.id);
   activeRsvp.notComing.delete(ctx.from.id);
@@ -172,7 +168,7 @@ const disableOldRsvp = () => {
       ),
       Extra.markdown()
     )
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
   activeRsvp = null;
 };
 
@@ -191,7 +187,7 @@ const updateRsvpMessage = ctx => {
       ),
       defaultRsvpMenu
     )
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 };
 
 /**
@@ -228,7 +224,7 @@ const run = () => {
         activeRsvp.messageId = m.message_id;
         console.log(`Sent message with id ${activeRsvp.messageId}`);
       })
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
     sentDates.push(activeRsvp.date);
   }
 
