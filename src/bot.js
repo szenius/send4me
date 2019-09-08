@@ -3,7 +3,7 @@ require("dotenv").config();
 const Telegraf = require("telegraf");
 const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
-const http = require("http");
+const https = require("https");
 
 const { foundDateInArray, isSameDate } = require("./utils/date_utils.js");
 const { getEvent } = require("./rsvp/schedule.js");
@@ -167,7 +167,8 @@ const updateRsvpMessage = ctx => {
  */
 const run = () => {
   // Ping app so it won't sleep
-  http.get(process.env.HEROKU_APP_URL);
+  console.log(`Pinging ${process.env.HEROKU_APP_URL}`);
+  https.get(process.env.HEROKU_APP_URL);
 
   // Send message
   console.log("Checking if should send message...");
