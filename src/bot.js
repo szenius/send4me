@@ -3,6 +3,7 @@ require("dotenv").config();
 const Telegraf = require("telegraf");
 const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
+const http = require("http");
 
 const { foundDateInArray, isSameDate } = require("./utils/date_utils.js");
 const { getEvent } = require("./rsvp/schedule.js");
@@ -165,6 +166,10 @@ const updateRsvpMessage = ctx => {
  * In each iteration, check if it is time to send out a scheduled event or disable an active RSVP.
  */
 const run = () => {
+  // Ping app so it won't sleep
+  http.get(process.env.HEROKU_APP_URL);
+
+  // Send message
   console.log("Checking if should send message...");
   const now = new Date();
   const scheduledEvent = getEvent(now);
@@ -194,6 +199,7 @@ const run = () => {
     sentDates.push(activeRsvp.date);
   }
 
+  // Disable old RSVPs
   console.log("Checking if should disable old RSVPs...");
   if (activeRsvp && isSameDate(activeRsvp.deadline, now)) {
     disableOldRsvp();
