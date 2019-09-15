@@ -10,7 +10,7 @@ const buildRsvpString = (eventName, dateString, coming, notComing) => {
 };
 
 const buildDisabledRsvpString = (eventName, dateString, coming, notComing) => {
-  let rsvpString = `*RSVP HAS CLOSED.*\n\n"`;
+  let rsvpString = `*RSVP HAS CLOSED.*\n\n`;
   rsvpString += `${buildRsvpString(eventName, dateString, coming, notComing)}`
   return rsvpString;
 };

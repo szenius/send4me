@@ -15,6 +15,7 @@ const {
   TEXT_REASON_WORK_SCHOOL,
   TEXT_REASON_SICK,
   TEXT_REASON_OTHERS,
+  FILENAME_ACTIVE_RSVP,
   getMenuButtonText
 } = require("./constants/constants.js");
 const {
@@ -22,6 +23,11 @@ const {
   buildRsvpString,
   buildDisabledRsvpString
 } = require("./rsvp/rsvp_builder.js");
+const {
+  readActiveRsvpFromFile,
+  writeActiveRsvpToFile,
+  writeJsonToFile
+} = require("./utils/db_utils.js");
 const express = require("express");
 const expressApp = express();
 
@@ -35,7 +41,7 @@ expressApp.listen(port, () => {
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 
-let activeRsvp = null;
+let activeRsvp = readActiveRsvpFromFile(FILENAME_ACTIVE_RSVP);
 const sentDates = [];
 
 /**
@@ -170,6 +176,7 @@ const disableOldRsvp = () => {
     )
     .catch(err => console.error(err));
   activeRsvp = null;
+  writeJsonToFile({}, FILENAME_ACTIVE_RSVP);
 };
 
 /**
@@ -188,6 +195,8 @@ const updateRsvpMessage = ctx => {
       defaultRsvpMenu
     )
     .catch(err => console.error(err));
+  console.log("updated. active rsvp: ", activeRsvp);
+  writeActiveRsvpToFile(activeRsvp, FILENAME_ACTIVE_RSVP);
 };
 
 /**
@@ -212,6 +221,7 @@ const run = () => {
       coming: new Map(),
       notComing: new Map()
     };
+    writeJsonToFile(activeRsvp, FILENAME_ACTIVE_RSVP);
     // Send out new RSVP
     const message = buildNewRsvpString(
       scheduledEvent.eventName,
