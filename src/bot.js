@@ -195,7 +195,6 @@ const updateRsvpMessage = ctx => {
       defaultRsvpMenu
     )
     .catch(err => console.error(err));
-  console.log("updated. active rsvp: ", activeRsvp);
   writeActiveRsvpToFile(activeRsvp, FILENAME_ACTIVE_RSVP);
 };
 

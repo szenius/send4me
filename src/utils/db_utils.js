@@ -1,28 +1,22 @@
 const fs = require("fs");
 
 const writeActiveRsvpToFile = (activeRsvp, filename) => {
-  // Convert Maps to maps so they can be stored as JSON string
   if (activeRsvp) {
-    if (activeRsvp.coming) {
-      activeRsvp.coming = Array.from(activeRsvp.coming.entries());
-    }
-    if (activeRsvp.notComing) {
-      activeRsvp.notComing = Array.from(activeRsvp.notComing.entries());
-    }
+    activeRsvp.coming = Array.from(activeRsvp.coming.entries()) || [];
+    activeRsvp.notComing = Array.from(activeRsvp.notComing.entries()) || [];
   }
   writeJsonToFile(activeRsvp, filename);
 };
 
 const readActiveRsvpFromFile = filename => {
   const activeRsvp = readJsonFromFile(filename);
-  // Deserialise arrays into Map objects
   if (activeRsvp) {
-    if (activeRsvp.coming) {
-      activeRsvp.coming = new Map(activeRsvp.coming);
-    }
-    if (activeRsvp.notComing) {
-      activeRsvp.notComing = new Map(activeRsvp.notComing);
-    }
+    // Deserialise arrays into Map objects
+    activeRsvp.coming = new Map(activeRsvp.coming) || new Map();
+    activeRsvp.notComing = new Map(activeRsvp.notComing) || new Map();
+    // Deserialise date strings into Date objects
+    activeRsvp.date = new Date(activeRsvp.date);
+    activeRsvp.deadline = new Date(activeRsvp.deadline);
   }
   return activeRsvp;
 };
@@ -39,16 +33,11 @@ const writeJsonToFile = (object, filename) => {
 
 const readJsonFromFile = filename => {
   try {
-    fs.readFileSync(filename, "utf8", (err, jsonString) => {
-      if (err) {
-        throw err;
-      }
-      return JSON.parse(jsonString);
-    });
+    return JSON.parse(fs.readFileSync(filename));
   } catch (err) {
     console.log(`Error reading from ${filename}: ${err}`);
+    return null;
   }
-  return null;
 };
 
 module.exports = {
