@@ -1,26 +1,52 @@
 const fs = require("fs");
 
+/**
+ * Writes activeRSVP to json file. Attendance maps are serialised as arrays.
+ *
+ * @param {*} activeRsvp
+ * @param {string} filename
+ */
 const writeActiveRsvpToFile = (activeRsvp, filename) => {
-  if (activeRsvp) {
-    activeRsvp.coming = Array.from(activeRsvp.coming.entries()) || [];
-    activeRsvp.notComing = Array.from(activeRsvp.notComing.entries()) || [];
+  if (!activeRsvp) {
+    writeJsonToFile({}, filename);
   }
-  writeJsonToFile(activeRsvp, filename);
+  const activeRsvpCopy = {
+    ...activeRsvp,
+    coming: Array.from(activeRsvp.coming.entries()) || [],
+    notComing: Array.from(activeRsvp.notComing.entries()) || []
+  };
+  writeJsonToFile(activeRsvpCopy, filename);
 };
 
+/**
+ * Reads activeRsvp from a json file. Dates and attendance maps are deserialised.
+ * If the deadline is over, return null. Otherwise, return the read activeRsvp.
+ *
+ * @param {string} filename
+ */
 const readActiveRsvpFromFile = filename => {
   const activeRsvp = readJsonFromFile(filename);
   if (activeRsvp) {
-    // Deserialise arrays into Map objects
-    activeRsvp.coming = new Map(activeRsvp.coming) || new Map();
-    activeRsvp.notComing = new Map(activeRsvp.notComing) || new Map();
-    // Deserialise date strings into Date objects
     activeRsvp.date = new Date(activeRsvp.date);
     activeRsvp.deadline = new Date(activeRsvp.deadline);
+
+    if (activeRsvp.deadline < new Date()) {
+      return null;
+    }
+
+    activeRsvp.coming = new Map(activeRsvp.coming) || new Map();
+    activeRsvp.notComing = new Map(activeRsvp.notComing) || new Map();
+    return activeRsvp;
   }
-  return activeRsvp;
+  return null;
 };
 
+/**
+ * Writes JSON file to file with given filename.
+ *
+ * @param {*} object
+ * @param {string} filename
+ */
 const writeJsonToFile = (object, filename) => {
   fs.writeFile(filename, JSON.stringify(object, null, 2), err => {
     if (err) {
@@ -31,6 +57,11 @@ const writeJsonToFile = (object, filename) => {
   });
 };
 
+/**
+ * Reads JSON object from file with given filename.
+ *
+ * @param {string} filename
+ */
 const readJsonFromFile = filename => {
   try {
     return JSON.parse(fs.readFileSync(filename));

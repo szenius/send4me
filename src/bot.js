@@ -181,6 +181,7 @@ const disableOldRsvp = () => {
 
 /**
  * Update message for active RSVP.
+ * 
  * @param {*} ctx
  */
 const updateRsvpMessage = ctx => {
@@ -211,9 +212,9 @@ const run = () => {
   const now = new Date();
   const scheduledEvent = getEvent(now);
   if (scheduledEvent && !foundDateInArray(scheduledEvent.date, sentDates)) {
-    // Reset active RSVP
     if (activeRsvp) {
-      disableOldRsvp();
+      console.error('Sorry, only one RSVP can be active at any time.');
+      return Promise.delay(process.env.RUN_INTERVAL).then(() => run());
     }
     activeRsvp = {
       ...scheduledEvent,
