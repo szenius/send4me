@@ -54,14 +54,6 @@ const initAttendanceMapsIfNotExist = () => {
 };
 
 /**
- * Check if coming and notcoming maps are present in activeRSVP. If not, set to empty maps.
- */
-const initAttendanceMapsIfNotExist = () => {
-  activeRsvp.coming = activeRsvp.coming || new Map();
-  activeRsvp.notComing = activeRsvp.notComing || new Map();
-};
-
-/**
  * Inline menu for Default RSVPs
  */
 const defaultRsvpMenu = Markup.inlineKeyboard(
