@@ -5,8 +5,18 @@ const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 const https = require("https");
 
-const { foundDateInArray, isSameDate } = require("./utils/date_utils.js");
-const { getEvent } = require("./rsvp/schedule.js");
+const { getNextEvent, isSameDate } = require("./core/schedule");
+const {
+  buildNewRsvpString,
+  buildRsvpString,
+  buildDisabledRsvpString
+} = require("./core/rsvp");
+const {
+  readActiveRsvpFromFile,
+  readScheduleFromFile,
+  writeActiveRsvpToFile,
+  writeJsonToFile
+} = require("./core/db");
 const {
   ACTION_COMING,
   ACTION_NOT_COMING_WORK_SCHOOL,
@@ -15,13 +25,10 @@ const {
   TEXT_REASON_WORK_SCHOOL,
   TEXT_REASON_SICK,
   TEXT_REASON_OTHERS,
+  FILENAME_ACTIVE_RSVP,
+  FILENAME_SCHEDULE,
   getMenuButtonText
-} = require("./constants/constants.js");
-const {
-  buildNewRsvpString,
-  buildRsvpString,
-  buildDisabledRsvpString
-} = require("./rsvp/rsvp_builder.js");
+} = require("./core/constants");
 const express = require("express");
 const expressApp = express();
 
@@ -35,8 +42,16 @@ expressApp.listen(port, () => {
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 
-let activeRsvp = null;
-const sentDates = [];
+let activeRsvp = readActiveRsvpFromFile(FILENAME_ACTIVE_RSVP);
+const schedule = readScheduleFromFile(FILENAME_SCHEDULE);
+
+/**
+ * Check if coming and notcoming maps are present in activeRSVP. If not, set to empty maps.
+ */
+const initAttendanceMapsIfNotExist = () => {
+  activeRsvp.coming = activeRsvp.coming || new Map();
+  activeRsvp.notComing = activeRsvp.notComing || new Map();
+};
 
 /**
  * Check if coming and notcoming maps are present in activeRSVP. If not, set to empty maps.
@@ -170,10 +185,12 @@ const disableOldRsvp = () => {
     )
     .catch(err => console.error(err));
   activeRsvp = null;
+  writeJsonToFile({}, FILENAME_ACTIVE_RSVP);
 };
 
 /**
  * Update message for active RSVP.
+ *
  * @param {*} ctx
  */
 const updateRsvpMessage = ctx => {
@@ -188,6 +205,7 @@ const updateRsvpMessage = ctx => {
       defaultRsvpMenu
     )
     .catch(err => console.error(err));
+  writeActiveRsvpToFile(activeRsvp, FILENAME_ACTIVE_RSVP);
 };
 
 /**
@@ -201,11 +219,11 @@ const run = () => {
 
   // Send message
   const now = new Date();
-  const scheduledEvent = getEvent(now);
-  if (scheduledEvent && !foundDateInArray(scheduledEvent.date, sentDates)) {
-    // Reset active RSVP
+  const scheduledEvent = getNextEvent(schedule, now);
+  if (scheduledEvent && !scheduledEvent.isSent) {
     if (activeRsvp) {
-      disableOldRsvp();
+      console.error("Sorry, only one RSVP can be active at any time.");
+      return Promise.delay(process.env.RUN_INTERVAL).then(() => run());
     }
     activeRsvp = {
       ...scheduledEvent,
@@ -225,7 +243,10 @@ const run = () => {
         console.log(`Sent message with id ${activeRsvp.messageId}`);
       })
       .catch(err => console.error(err));
-    sentDates.push(activeRsvp.date);
+    scheduledEvent.isSent = true;
+    activeRsvp.isSent = true;
+    writeJsonToFile(schedule, FILENAME_SCHEDULE);
+    writeActiveRsvpToFile(activeRsvp, FILENAME_ACTIVE_RSVP);
   }
 
   // Disable old RSVPs
