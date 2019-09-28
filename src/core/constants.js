@@ -8,6 +8,9 @@ const TEXT_REASON_WORK_SCHOOL = "(work/school)";
 const TEXT_REASON_SICK = "(sick)";
 const TEXT_REASON_OTHERS = "(others)";
 
+const FILENAME_ACTIVE_RSVP = "active_rsvp.json";
+const FILENAME_SCHEDULE = "schedule.json";
+
 const getMenuButtonText = action => {
   switch (action) {
     case ACTION_COMING:
@@ -32,5 +35,7 @@ module.exports = {
   TEXT_REASON_WORK_SCHOOL,
   TEXT_REASON_SICK,
   TEXT_REASON_OTHERS,
+  FILENAME_ACTIVE_RSVP,
+  FILENAME_SCHEDULE,
   getMenuButtonText
 };

@@ -1,6 +1,7 @@
-const foundDateInArray = (newDate, sentDates) => {
-  return sentDates.find(sentDate => isSameDate(sentDate, newDate));
-};
+const getNextEvent = (schedule, now) =>
+  schedule
+    .filter(event => !event.isSent)
+    .find(event => isSameDate(event.date, now));
 
 const isSameDate = (date1, date2) => {
   return (
@@ -13,6 +14,6 @@ const isSameDate = (date1, date2) => {
 };
 
 module.exports = {
-  foundDateInArray,
+  getNextEvent,
   isSameDate
 };
