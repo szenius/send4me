@@ -42,6 +42,24 @@ const readActiveRsvpFromFile = filename => {
 };
 
 /**
+ * Reads schedule from json file. Dates are deserialised.
+ * 
+ * @param {string} filename 
+ */
+const readScheduleFromFile = filename => {
+  let schedule = readJsonFromFile(filename);
+  if (schedule) {
+    schedule = Array.from(schedule);
+    schedule.forEach(event => {
+      event.date = new Date(event.date);
+      event.deadline = new Date(event.deadline);
+    });
+    return schedule;
+  }
+  return {};
+};
+
+/**
  * Writes JSON file to file with given filename.
  *
  * @param {*} object
@@ -75,5 +93,6 @@ module.exports = {
   readJsonFromFile,
   writeJsonToFile,
   readActiveRsvpFromFile,
-  writeActiveRsvpToFile
+  writeActiveRsvpToFile,
+  readScheduleFromFile
 };

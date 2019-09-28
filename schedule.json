@@ -1,0 +1,16 @@
+[
+  {
+    "date": "2019-09-28T06:44:00.000Z",
+    "eventName": "test event",
+    "dateString": "today 10PM",
+    "deadline": "2019-09-28T06:49:00.000Z",
+    "isSent": true
+  },
+  {
+    "date": "2019-10-08T02:00:00.000Z",
+    "eventName": "recap session",
+    "dateString": "this Friday 11 Oct 7.50PM",
+    "deadline": "2019-10-11T12:00:00.000Z",
+    "isSent": false
+  }
+]
