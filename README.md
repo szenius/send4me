@@ -1,5 +1,8 @@
-# Bless Administrative Bot
-We want to spend more time doing good than enabling ourselves to do good. Hence the birth of the Bless Administrative Bot, which aims to automate administrative processes like attendance taking and sending reminders.
+# Bringing Love to Every Single Soul (BLESS)
+BLESS is a registered non-religious, Non-Profit Organisation, incorporated on 21 June 2014. With an overarching framework of “A Community for Community”, BLESS recognises the bountiful potential of social capital and actively targets the community as a focal point of intervention.
+
+# BLESS Administrative Bot
+We want to spend more time doing good than enabling ourselves to do good. Hence the birth of the BLESS Administrative Bot, which aims to automate administrative processes like attendance taking and sending reminders for volunteer management.
 
 ## User Guide
 This bot is still in the testing phase, so it's not opened to public yet. However, you may [drop me an email](mailto:ting.szeying@gmail.com) should you wish to be a tester once the bot is opened for private beta testing.

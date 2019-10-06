@@ -3,6 +3,8 @@ const ACTION_NOT_COMING_WORK_SCHOOL = "not_coming_work_school";
 const ACTION_NOT_COMING_SICK = "not_coming_sick";
 const ACTION_NOT_COMING_OTHERS = "not_coming_others";
 
+const COMMAND_CHAT_ID = "chat_id"
+
 const TEXT_NOT_COMING = "not coming";
 const TEXT_REASON_WORK_SCHOOL = "(work/school)";
 const TEXT_REASON_SICK = "(sick)";
@@ -32,6 +34,7 @@ module.exports = {
   ACTION_NOT_COMING_WORK_SCHOOL,
   ACTION_NOT_COMING_SICK,
   ACTION_NOT_COMING_OTHERS,
+  COMMAND_CHAT_ID,
   TEXT_REASON_WORK_SCHOOL,
   TEXT_REASON_SICK,
   TEXT_REASON_OTHERS,
