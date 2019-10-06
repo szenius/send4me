@@ -22,6 +22,7 @@ const {
   ACTION_NOT_COMING_WORK_SCHOOL,
   ACTION_NOT_COMING_SICK,
   ACTION_NOT_COMING_OTHERS,
+  COMMAND_CHAT_ID,
   TEXT_REASON_WORK_SCHOOL,
   TEXT_REASON_SICK,
   TEXT_REASON_OTHERS,
@@ -74,6 +75,13 @@ const defaultRsvpMenu = Markup.inlineKeyboard(
   ],
   { columns: 1 }
 ).extra();
+
+bot.command(COMMAND_CHAT_ID, ctx => {
+  console.log(`Requested chat id: ${ctx.chat.id}`);
+  bot.telegram
+  .sendMessage(ctx.chat.id, 'Logged Chat ID.')
+  .catch(err => console.error(err));
+});
 
 /**
  * Steps to be executed when user clicks on "coming" button on RSVP.
