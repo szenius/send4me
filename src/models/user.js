@@ -4,6 +4,15 @@ class User {
     this.username = user.username || user.first_name;
   }
 
-  getId = () => this.id;
-  getUsername = () => this.username;
+  getId() {
+    return this.id;
+  }
+
+  getUsername() {
+    return this.username;
+  }
 }
+
+module.exports = {
+  User
+};

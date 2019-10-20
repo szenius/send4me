@@ -5,18 +5,18 @@ const { Extra, Markup } = Telegraf;
 const Promise = require("bluebird");
 const https = require("https");
 
-const { getNextEvent, isSameDate } = require("./core/schedule");
+const { getNextEvent, isSameDate } = require("./services/schedule");
 const {
   buildNewRsvpString,
   buildRsvpString,
   buildDisabledRsvpString
-} = require("./core/rsvp");
+} = require("./services/pollBuilder");
 const {
   readActiveRsvpFromFile,
   readScheduleFromFile,
   writeActiveRsvpToFile,
   writeJsonToFile
-} = require("./core/db");
+} = require("./services/db");
 const {
   ACTION_COMING,
   ACTION_NOT_COMING_WORK_SCHOOL,
@@ -29,7 +29,7 @@ const {
   FILENAME_ACTIVE_RSVP,
   FILENAME_SCHEDULE,
   getMenuButtonText
-} = require("./core/constants");
+} = require("./services/constants");
 const express = require("express");
 const expressApp = express();
 

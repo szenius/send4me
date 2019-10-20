@@ -1,14 +1,35 @@
 class Message {
-  constructor(id, text, sendDate, closeDate) {
-    this.id = id;
+  constructor(text, sendDate, closeDate) {
     this.text = text;
     this.sendDate = sendDate;
     this.closeDate = closeDate;
   }
 
-  setText = text => (this.text = text);
-  getId = () => this.id;
-  getText = () => this.text;
-  getSendDate = () => this.sendDate;
-  getCloseDate = () => this.closeDate;
+  setId(id) {
+    this.id = id;
+  }
+
+  setText(text) {
+    this.text = text;
+  }
+
+  getId() {
+    return this.id;
+  }
+
+  getText() {
+    return this.text;
+  }
+
+  getSendDate() {
+    return this.sendDate;
+  }
+
+  getCloseDate() {
+    return this.closeDate;
+  }
 }
+
+module.exports = {
+  Message
+};
