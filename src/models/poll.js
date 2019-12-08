@@ -1,28 +1,33 @@
 const { Message } = require("./message");
 
 class Poll extends Message {
-  constructor(text, sendDate, closeDate, options) {
-    super(text, sendDate, closeDate);
+  constructor(text, sendDate, closeDate, chatId, options) {
+    super(text, sendDate, closeDate, chatId);
+    this.isPoll = true;
+    this.isSent = false;
+    this.isClosed = false;
+
     this.responses = new Map();
     options.map(option => this.responses.set(option, []));
-    this.isDisabled = false;
   }
 
   addResponse(option, user) {
-    if (!this.isDisabled) {
+    if (!this.isClosed) {
       this.responses.get(option).push(user);
     }
-  }
-
-  setIsDisabled(isDisabled) {
-    this.isDisabled = isDisabled;
   }
 
   getText() {
     let text = `${this.text}\n\n`;
     for (let [option, users] of this.responses) {
-      text += `${option}\n`;
-      text += `${Array.join(users.map(user => user.username), ', ')}\n\n`;
+      text += `${option}:\n`;
+      text +=
+        users.length === 0
+          ? "\n"
+          : `${Array.join(
+              users.map(user => user.username),
+              ", "
+            )}\n\n`;
     }
     return text.trim();
   }
@@ -34,12 +39,30 @@ class Poll extends Message {
   getAllResponses() {
     return this.responses;
   }
-
-  getIsDisabled() {
-    return this.isDisabled;
-  }
 }
 
 module.exports = {
   Poll
 };
+
+// /**
+//  * Inline menu for Default RSVPs
+//  */
+// const defaultRsvpMenu = Markup.inlineKeyboard(
+//   [
+//     Markup.callbackButton(getMenuButtonText(ACTION_COMING), ACTION_COMING),
+//     Markup.callbackButton(
+//       getMenuButtonText(ACTION_NOT_COMING_WORK_SCHOOL),
+//       ACTION_NOT_COMING_WORK_SCHOOL
+//     ),
+//     Markup.callbackButton(
+//       getMenuButtonText(ACTION_NOT_COMING_SICK),
+//       ACTION_NOT_COMING_SICK
+//     ),
+//     Markup.callbackButton(
+//       getMenuButtonText(ACTION_NOT_COMING_OTHERS),
+//       ACTION_NOT_COMING_OTHERS
+//     )
+//   ],
+//   { columns: 1 }
+// ).extra();

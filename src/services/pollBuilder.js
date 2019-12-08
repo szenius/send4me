@@ -1,4 +1,7 @@
 const { Poll } = require("../models/poll");
+const { getOptionsForMessage } = require("./database");
+const { getBot } = require("../bot");
+const { Extra } = require("Telegraf");
 const moment = require("moment");
 
 /**
@@ -7,16 +10,33 @@ const moment = require("moment");
  *
  * @param {string} sessionName
  * @param {Date} sessionDate
+ * @param {string} chatId
  */
-const buildSessionPoll = (sessionName, sessionDate) => {
+const buildSessionPoll = (sessionName, sessionDate, chatId) => {
   return new Poll(
     `Hi volunteers, the next ${sessionName} will be on ${sessionDate.format(
       "dddd, MMM Do, h:mm A"
     )}. Please indicate your attendance below!`,
     moment(sessionDate).subtract(3, "day"),
     sessionDate,
-    ["coming", "not coming(reason)"]
+    chatId,
+    ["coming", "not coming"]
   );
+};
+
+const getInlineKeyboard = (poll, callback) => {
+  getOptionsForMessage(poll.message_id, poll.chat_id, (err, options) => {
+    const inlineKeyboard = Extra.markdown().markup(m =>
+      m.inlineKeyboard(
+        options.map(option => {
+          console.log("id: ", `__OPTION__ID__${option.id}__`, "|| text: ", option.text);
+          return m.callbackButton(option.text, `__OPTION__ID__${option.id}__`);
+        }),
+        { columns: 1 }
+      )
+    );
+    callback(err, inlineKeyboard);
+  });
 };
 
 // const buildNewRsvpString = (eventName, dateString) => {
@@ -47,5 +67,6 @@ const buildSessionPoll = (sessionName, sessionDate) => {
 // };
 
 module.exports = {
-  buildSessionPoll
+  buildSessionPoll,
+  getInlineKeyboard
 };

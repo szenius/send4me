@@ -1,20 +1,32 @@
 class Message {
-  constructor(text, sendDate, closeDate) {
+  constructor(text, sendDate, closeDate, chatId) {
     this.text = text;
     this.sendDate = sendDate;
     this.closeDate = closeDate;
+    this.chatId = chatId;
+    this.isPoll = false;
+    this.isSent = false;
+    this.isClosed = false;
   }
 
-  setId(id) {
-    this.id = id;
+  setMessageId(messageId) {
+    this.messageId = messageId;
   }
 
   setText(text) {
     this.text = text;
   }
 
-  getId() {
-    return this.id;
+  setIsClosed(isClosed) {
+    this.isClosed = isClosed;
+  }
+
+  setIsSent(isSent) {
+    this.isSent = isSent;
+  }
+
+  getMessageId() {
+    return this.messageId;
   }
 
   getText() {
@@ -27,6 +39,22 @@ class Message {
 
   getCloseDate() {
     return this.closeDate;
+  }
+
+  getChatId() {
+    return this.chatId;
+  }
+
+  getIsClosed() {
+    return this.isClosed;
+  }
+
+  getIsSent() {
+    return this.isSent;
+  }
+
+  getIsPoll() {
+    return this.isPoll;
   }
 }
 
