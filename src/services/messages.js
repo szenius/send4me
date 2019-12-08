@@ -1,5 +1,5 @@
 const { getNewMessages, upsertMessage } = require("./database");
-const { getInlineKeyboard } = require("./pollBuilder");
+const { getPoll } = require("./pollBuilder");
 const { getBot } = require("../bot");
 const moment = require("moment");
 
@@ -29,10 +29,10 @@ const closeOldMessages = () => {
 
 const sendPoll = poll => {
   try {
-    getInlineKeyboard(poll, (err, inlineKeyboard) => {
-      // TODO: error handling
+    getPoll(poll, (err, message, inlineKeyboard) => {
+      if (err) console.error("Error getting poll: ", err);
       getBot()
-        .telegram.sendMessage(poll.chat_id, poll.text, inlineKeyboard)
+        .telegram.sendMessage(poll.chat_id, message, inlineKeyboard)
         .then(m => {
           getBot().telegram.pinChatMessage(poll.chat_id, m.message_id);
           poll.is_sent = true;
@@ -42,7 +42,7 @@ const sendPoll = poll => {
               poll.chat_id
             } on ${moment.utc().toString()}`
           );
-        });
+        })
     });
   } catch (err) {
     console.error(
@@ -80,5 +80,6 @@ const sendMessage = message => {
 
 module.exports = {
   sendNewMessages,
-  closeOldMessages
+  closeOldMessages,
+  sendPoll
 };
