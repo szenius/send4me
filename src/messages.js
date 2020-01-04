@@ -1,5 +1,5 @@
 const { getNewMessages, upsertMessage, getPollResponses } = require("./database");
-const { getBot } = require("../bot");
+const { getBot } = require("./bot");
 const moment = require("moment");
 const { Extra } = require("Telegraf");
 

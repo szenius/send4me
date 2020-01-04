@@ -4,7 +4,7 @@ const {
   upsertUser,
   toggleResponse,
   getMessageById
-} = require("./services/database");
+} = require("./database");
 // const { getPoll } = require("./services/pollBuilder");
 // const { sendPoll } = require("./services/messages");
 

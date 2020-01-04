@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { getConnection } = require("../mysql");
+const { getConnection } = require("./mysql");
 
 const getNewMessages = callback => {
   const now = moment.utc().format("YYYY-MM-DD HH:mm:ss");
