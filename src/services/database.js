@@ -9,20 +9,10 @@ const getNewMessages = callback => {
   });
 };
 
-const getOptionsForMessage = (messageId, chatId, callback) => {
-  const query = `SELECT * FROM options WHERE message_id = '${messageId}' AND chat_id = '${chatId}'`;
-  console.log('getting options for message');
+const getPollResponses = (messageId, chatId, callback) => {
+  const query = `SELECT * FROM (options o LEFT JOIN responses r ON o.option_id = r.option_id) LEFT JOIN users u ON r.user_id = u.user_id WHERE o.message_id = ${messageId} AND o.chat_id = ${chatId}`;
   getConnection().query(query, (err, result) => {
-    if (err) console.error("Error getting options for message: ", err);
-    const optionIds = result.map(option => option.id);
-    const responseByOptionQuery = `SELECT * FROM responses WHERE option_id IN (${optionIds.toString()}) GROUP BY option_id`;
-    console.log('getting responses by options');
-    console.log(responseByOptionQuery);
-    getConnection(responseByOptionQuery, (_err, responses) => {
-      if (_err) console.error("Error getting responses by options: ", err);
-      console.log('ok');
-      callback(_err, result, responses);
-    })
+    callback(err, result);
   });
 };
 
@@ -30,12 +20,12 @@ const getMessageById = (messageId, chatId, callback) => {
   const query = `SELECT * FROM messages WHERE message_id = '${messageId}' AND chat_id = '${chatId}'`;
   getConnection().query(query, (err, result) => {
     callback(err, result);
-  })
-}
+  });
+};
 
 const upsertMessage = (message, newMessageId) => {
-  const query = `UPDATE messages SET message_id = '${newMessageId}', text = '${
-    message.text
+  const query = `UPDATE messages SET message_id = '${newMessageId}', content = '${
+    message.content
   }', send_date = '${moment(message.send_date).format(
     "YYYY-MM-DD HH:mm:ss"
   )}', close_date = '${moment(message.close_date).format(
@@ -57,9 +47,9 @@ const toggleResponse = (userId, optionId) => {
   console.log(query);
   getConnection().query(query, (err, result) => {
     if (err) console.error("Error toggling response: ", err);
-    console.log('found response: ', result); // TODO: somehow this is always empty???
+    console.log("found response: ", result); // TODO: somehow this is always empty???
     if (result.length === 1) {
-      console.log('delete');
+      console.log("delete");
       deleteResponse(userId, optionId);
     } else {
       insertResponse(userId, optionId);
@@ -71,16 +61,15 @@ const insertResponse = (userId, optionId) => {
   const query = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
   getConnection().query(query, err => {
     if (err) console.error("Error inserting response: ", err);
-  });  
-}
+  });
+};
 
 const deleteResponse = (userId, optionId) => {
   const query = `DELETE FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
   getConnection().query(query, err => {
     if (err) console.error("Error deleting response: ", err);
-  });  
-
-}
+  });
+};
 
 const upsertUser = ({ id, username }) => {
   const query = `REPLACE INTO users VALUES('${id}', '${username}')`;
@@ -91,9 +80,9 @@ const upsertUser = ({ id, username }) => {
 
 module.exports = {
   getNewMessages,
-  getOptionsForMessage,
   upsertMessage,
   toggleResponse,
   upsertUser,
-  getMessageById
+  getMessageById,
+  getPollResponses,
 };

@@ -1,5 +1,5 @@
 const { Poll } = require("../models/poll");
-const { getOptionsForMessage } = require("./database");
+const { getPollResponses } = require("./database");
 const { Extra } = require("Telegraf");
 const moment = require("moment");
 
@@ -24,18 +24,21 @@ const buildSessionPoll = (sessionName, sessionDate, chatId) => {
 };
 
 const getPoll = (poll, callback) => {
-  getOptionsForMessage(poll.message_id, poll.chat_id, (err, options, responses) => {
-    if (err) console.error("Error getting options for message: ", err);
+  getPollResponses(poll.message_id, poll.chat_id, (err, result) => {
+    if (err) console.error("Error getting poll with responses: ", err);
+    console.log('result: ', result);
+    const options = result.map(row => row.text);
+    console.log('options: ', options);
     const inlineKeyboard = Extra.markdown().markup(m =>
       m.inlineKeyboard(
         options.map(option =>
-          m.callbackButton(option.text, `__OPTION__ID__${option.id}__`)
+          m.callbackButton(option, `__OPTION__ID__${option.id}__`)
         ),
         { columns: 1 }
       )
     );
-    let message = `${poll.text}\n\n`;
-    console.log(responses);
+    let message = `${poll.content}\n\n`;
+
     callback(err, message, inlineKeyboard);
   });
 };
