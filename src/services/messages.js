@@ -1,7 +1,7 @@
-const { getNewMessages, upsertMessage } = require("./database");
-const { getPoll } = require("./pollBuilder");
+const { getNewMessages, upsertMessage, getPollResponses } = require("./database");
 const { getBot } = require("../bot");
 const moment = require("moment");
+const { Extra } = require("Telegraf");
 
 const sendNewMessages = () => {
   try {
@@ -76,6 +76,39 @@ const sendMessage = message => {
     throw err;
   }
   return message;
+};
+
+const getPoll = (poll, callback) => {
+  getPollResponses(poll.message_id, poll.chat_id, (err, result) => {
+    if (err) console.error("Error getting poll with responses: ", err);
+    const options = {};
+    const responsesMap = {};
+    result.forEach(row => {
+      if (responsesMap[row.text]) {
+        responsesMap[row.text].push(`@${row.username}`);
+      } else {
+        responsesMap[row.text] = [`@${row.username}`];
+      }
+      if (!options[row.option_id]) {
+        options[row.option_id] = row.text;
+      }
+    });
+    const inlineKeyboard = Extra.markdown().markup(m =>
+      m.inlineKeyboard(
+        Object.keys(options).map(key =>
+          m.callbackButton(options[key], `__OPTION__ID__${key}__`)
+        ),
+        { columns: 1 }
+      )
+    );
+    let message = `${poll.content}\n\n`;
+    Object.entries(responsesMap).forEach(([optionText, respondedUsernames]) => {
+      message += `${optionText}\n`;
+      message += `${respondedUsernames.join(', ')}\n`;
+      message += '\n';
+    });
+    callback(err, message, inlineKeyboard);
+  });
 };
 
 module.exports = {

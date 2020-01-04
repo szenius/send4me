@@ -5,7 +5,7 @@ const {
   toggleResponse,
   getMessageById
 } = require("./services/database");
-const { getPoll } = require("./services/pollBuilder");
+// const { getPoll } = require("./services/pollBuilder");
 // const { sendPoll } = require("./services/messages");
 
 const BOT_TOKEN = process.env.BOT_TOKEN || "";
@@ -24,15 +24,15 @@ const launch = () => {
     upsertUser(ctx.update.callback_query.from);
     toggleResponse(userId, optionId);
 
-    getMessageById(
-      ctx.update.callback_query.message.message_id,
-      ctx.update.callback_query.message.chat.id,
-      (err, result) => {
-        getPoll(result, (err, message, inlineKeyboard) => {
-          console.log('MESSAGE: ', message);
-        });
-      }
-    );
+    // getMessageById(
+    //   ctx.update.callback_query.message.message_id,
+    //   ctx.update.callback_query.message.chat.id,
+    //   (err, result) => {
+    //     getPoll(result, (err, message, inlineKeyboard) => {
+    //       console.log('MESSAGE: ', message);
+    //     });
+    //   }
+    // );
     // sendPoll(poll); TODO: circular dependency
 
     const optionText = ctx.update.callback_query.message.reply_markup.inline_keyboard.find(
