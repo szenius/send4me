@@ -11,7 +11,6 @@ const getNewMessages = callback => {
 
 const getPollResponses = (messageId, chatId, callback) => {
   const query = `SELECT o.text, o.option_id, u.username FROM (options o LEFT JOIN responses r ON o.option_id = r.option_id) LEFT JOIN users u ON r.user_id = u.user_id WHERE o.message_id = ${messageId} AND o.chat_id = ${chatId}`;
-  console.log('get poll responses: ', query);
   getConnection().query(query, (err, result) => {
     callback(err, result);
   });
@@ -20,7 +19,7 @@ const getPollResponses = (messageId, chatId, callback) => {
 const getMessageById = (messageId, chatId, callback) => {
   const query = `SELECT * FROM messages WHERE message_id = '${messageId}' AND chat_id = '${chatId}'`;
   getConnection().query(query, (err, result) => {
-    callback(err, result);
+    callback(err, result[0]);
   });
 };
 
@@ -43,32 +42,10 @@ const upsertMessage = (message, newMessageId) => {
   });
 };
 
-const toggleResponse = (userId, optionId) => {
-  const query = `SELECT * FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
-  console.log(query);
-  getConnection().query(query, (err, result) => {
-    if (err) console.error("Error toggling response: ", err);
-    console.log("found response: ", result); // TODO: somehow this is always empty???
-    if (result.length === 1) {
-      console.log("delete");
-      deleteResponse(userId, optionId);
-    } else {
-      insertResponse(userId, optionId);
-    }
-  });
-};
-
 const insertResponse = (userId, optionId) => {
   const query = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
   getConnection().query(query, err => {
     if (err) console.error("Error inserting response: ", err);
-  });
-};
-
-const deleteResponse = (userId, optionId) => {
-  const query = `DELETE FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
-  getConnection().query(query, err => {
-    if (err) console.error("Error deleting response: ", err);
   });
 };
 
@@ -82,7 +59,7 @@ const upsertUser = ({ id, username }) => {
 module.exports = {
   getNewMessages,
   upsertMessage,
-  toggleResponse,
+  insertResponse,
   upsertUser,
   getMessageById,
   getPollResponses,

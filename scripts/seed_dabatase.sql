@@ -8,7 +8,7 @@ DELETE FROM users;
 
 INSERT INTO chats VALUES('-1001205975376', 'Test Chat');
 
-INSERT INTO messages VALUES(1,'Hello this is a test message','2020-01-04 00:00:00','2020-01-06 00:00:00',true,false,false,'-1001205975376');
+INSERT INTO messages VALUES(1,'Hello this is a test message','2020-01-01 00:00:00','2030-01-01 00:00:00',true,false,false,'-1001205975376');
 
 INSERT INTO options VALUES(1,'coming',1,'-1001205975376');
 INSERT INTO options VALUES(1,'not coming',2,'-1001205975376');
