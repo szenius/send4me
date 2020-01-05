@@ -8,11 +8,12 @@ const {
 } = require("./database");
 const { getBot } = require("./bot");
 const moment = require("moment");
-const { Extra } = require("Telegraf");
+const { Extra } = require("telegraf");
 
 const sendNewMessages = () => {
   try {
     getNewMessages((err, newMessages) => {
+      console.log(`Found ${newMessages.length} new messages to be sent`);
       if (err) throw err;
       newMessages.forEach(message => {
         if (message.is_poll) {
@@ -35,7 +36,7 @@ const sendPoll = poll => {
   try {
     if (poll && poll.message_id && poll.chat_id) {
       bot = getBot();
-      getPoll(poll, (err, message, inlineKeyboard) => {
+      getPollContent(poll, (err, message, inlineKeyboard) => {
         if (err) console.error("Error getting poll: ", err);
         bot.telegram
           .sendMessage(poll.chat_id, message, inlineKeyboard)
@@ -64,7 +65,7 @@ const updatePoll = poll => {
   try {
     if (poll && poll.message_id && poll.chat_id) {
       bot = getBot();
-      getPoll(poll, (err, message, inlineKeyboard) => {
+      getPollContent(poll, (err, message, inlineKeyboard) => {
         if (err) {
           console.error("Error getting poll: ", err);
         } else {
@@ -117,7 +118,7 @@ const sendMessage = message => {
   return message;
 };
 
-const getPoll = (poll, callback) => {
+const getPollContent = (poll, callback) => {
   getPollResponses(poll.message_id, poll.chat_id, (err, result) => {
     if (err) console.error("Error getting poll with responses: ", err);
     const options = {};
@@ -142,7 +143,7 @@ const getPoll = (poll, callback) => {
     );
     let message = `${poll.content}\n\n`;
     Object.entries(responsesMap).forEach(([optionText, respondedUsernames]) => {
-      message += `*${optionText} - ${respondedUsernames.length} (${respondedUsernames.length / result.length * 100}%)*\n`;
+      message += `*${optionText} - ${respondedUsernames.length} (${Math.round(respondedUsernames.length / result.length * 100)}%)*\n`;
       message += `${respondedUsernames.join(", ")}\n`;
       message += "\n";
     });
