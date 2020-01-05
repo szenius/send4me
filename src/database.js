@@ -10,7 +10,7 @@ const getNewMessages = callback => {
 };
 
 const getPollResponses = (messageId, chatId, callback) => {
-  const query = `SELECT o.text, o.option_id, u.username FROM (options o LEFT JOIN responses r ON o.option_id = r.option_id) LEFT JOIN users u ON r.user_id = u.user_id WHERE o.message_id = ${messageId} AND o.chat_id = ${chatId}`;
+  const query = `SELECT o.text, o.option_id, u.username FROM (options o LEFT JOIN responses r ON o.option_id = r.option_id) LEFT JOIN users u ON r.user_id = u.user_id WHERE o.message_id = ${messageId} AND o.chat_id = ${chatId} ORDER BY o.option_id ASC`;
   getConnection().query(query, (err, result) => {
     callback(err, result);
   });
