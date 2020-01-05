@@ -42,6 +42,25 @@ const upsertMessage = (message, newMessageId) => {
   });
 };
 
+const toggleResponse = (userId, optionId) => {
+  const query = `SELECT * FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
+  getConnection().query(query, (err, result) => {
+    if (err) console.error("Error finding response to toggle: ", err);
+    if (result.length === 1) {
+      deleteResponse(userId, optionId);
+    } else {
+      insertResponse(userId, optionId);
+    }
+  });
+};
+
+const deleteResponse = (userId, optionId) => {
+  const query = `DELETE FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
+  getConnection().query(query, err => {
+    if (err) console.error("Error deleting response: ", err);
+  });
+};
+
 const insertResponse = (userId, optionId) => {
   const query = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
   getConnection().query(query, err => {
@@ -50,7 +69,7 @@ const insertResponse = (userId, optionId) => {
 };
 
 const upsertUser = ({ id, username }) => {
-  const query = `REPLACE INTO users VALUES('${id}', '${username}')`;
+  const query = `INSERT INTO users VALUES('${id}', '${username}') ON DUPLICATE KEY UPDATE username = '${username}'`;
   getConnection().query(query, err => {
     if (err) console.error("Error upserting user: ", err);
   });
@@ -59,8 +78,8 @@ const upsertUser = ({ id, username }) => {
 module.exports = {
   getNewMessages,
   upsertMessage,
-  insertResponse,
+  toggleResponse,
   upsertUser,
   getMessageById,
-  getPollResponses,
+  getPollResponses
 };

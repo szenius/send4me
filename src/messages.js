@@ -3,7 +3,7 @@ const {
   upsertMessage,
   getPollResponses,
   upsertUser,
-  insertResponse,
+  toggleResponse,
   getMessageById
 } = require("./database");
 const { getBot } = require("./bot");
@@ -164,7 +164,7 @@ const initBotActions = () => {
       .replace("__", "");
     const userId = ctx.update.callback_query.from.id;
     upsertUser(ctx.update.callback_query.from);
-    insertResponse(userId, optionId);
+    toggleResponse(userId, optionId);
 
     const messageId = ctx.update.callback_query.message.message_id;
     const chatId = ctx.update.callback_query.message.chat.id;
