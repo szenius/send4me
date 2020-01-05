@@ -8,7 +8,7 @@ let mysqlCon = null;
 const connect = () => {
   mysqlCon = mysql.createConnection(DATABASE_URL);
   mysqlCon.connect(err => {
-    if (err) throw err;
+    if (err) throw new Error("Error connecting to MySQL db server: " + err);
     console.log("Connected to MySQL db server");
   });
 };
@@ -20,13 +20,14 @@ const getConnection = () => {
       connect();
       return mysqlCon;
     } else {
-      throw err;
+      throw new Error("Error connecting to MySQL db server on getConnection: " + err);
     }
   });
 
   if (mysqlCon) {
     return mysqlCon;
   }
+
   throw new Error("Could not connect to MySQL db server");
 };
 
