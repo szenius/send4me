@@ -123,11 +123,15 @@ const getPollContent = (poll, callback) => {
     if (err) console.error("Error getting poll with responses: ", err);
     const options = {};
     const responsesMap = {};
+    let numResponses = 0;
     result.forEach(row => {
-      if (responsesMap[row.text]) {
+      if (row.username) {
+        numResponses++;
+      }
+      if (responsesMap[row.text] && row.username) {
         responsesMap[row.text].push(`@${row.username}`);
       } else {
-        responsesMap[row.text] = [`@${row.username}`];
+        responsesMap[row.text] = row.username ? [`@${row.username}`] : [];
       }
       if (!options[row.option_id]) {
         options[row.option_id] = row.text;
@@ -143,11 +147,11 @@ const getPollContent = (poll, callback) => {
     );
     let message = `${poll.content}\n\n`;
     Object.entries(responsesMap).forEach(([optionText, respondedUsernames]) => {
-      message += `*${optionText} - ${respondedUsernames.length} (${Math.round(respondedUsernames.length / result.length * 100)}%)*\n`;
+      message += `*${optionText} - ${respondedUsernames.length} (${Math.round(respondedUsernames.length / numResponses * 100)}%)*\n`;
       message += `${respondedUsernames.join(", ")}\n`;
       message += "\n";
     });
-    message += `👥 *${result.length} people* have responded so far.`
+    message += `👥 *${numResponses} people* have responded so far.`
     callback(err, message, inlineKeyboard);
   });
 };
