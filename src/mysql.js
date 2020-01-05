@@ -14,12 +14,23 @@ const connect = () => {
 };
 
 const getConnection = () => {
+  mysqlCon.on("error", function(err) {
+    if (err.code === "PROTOCOL_CONNECTION_LOST") {
+      connect();
+    } else {
+      throw err;
+    }
+  });
+
   if (mysqlCon) {
     return mysqlCon;
-  } else if (mysqlCon.state === "disconnected") {
+  }
+
+  if (mysqlCon.state === "disconnected") {
     connect();
     return mysqlCon;
   }
+
   throw new Error("Could not connect to MySQL db server");
 };
 
