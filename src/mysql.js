@@ -16,7 +16,9 @@ const connect = () => {
 const getConnection = () => {
   mysqlCon.on("error", function(err) {
     if (err.code === "PROTOCOL_CONNECTION_LOST") {
+      console.log("Lost MySQL db server connection, reconnecting...");
       connect();
+      return mysqlCon;
     } else {
       throw err;
     }
@@ -25,12 +27,6 @@ const getConnection = () => {
   if (mysqlCon) {
     return mysqlCon;
   }
-
-  if (mysqlCon.state === "disconnected") {
-    connect();
-    return mysqlCon;
-  }
-
   throw new Error("Could not connect to MySQL db server");
 };
 
