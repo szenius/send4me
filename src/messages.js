@@ -147,7 +147,7 @@ const getPollContent = (poll, callback) => {
     );
     let message = `${poll.content}\n\n`;
     Object.entries(responsesMap).forEach(([optionText, respondedUsernames]) => {
-      message += `*${optionText} - ${respondedUsernames.length} (${Math.round(respondedUsernames.length / numResponses * 100)}%)*\n`;
+      message += `*${optionText} - ${respondedUsernames.length} (${numResponses === 0 ? "-" : Math.round(respondedUsernames.length / numResponses * 100)}%)*\n`;
       message += `${respondedUsernames.join(", ")}\n`;
       message += "\n";
     });
