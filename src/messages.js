@@ -147,11 +147,15 @@ const getPollContent = (poll, callback) => {
     );
     let message = `${poll.content}\n\n`;
     Object.entries(responsesMap).forEach(([optionText, respondedUsernames]) => {
-      message += `*${optionText} - ${respondedUsernames.length} (${numResponses === 0 ? "-" : Math.round(respondedUsernames.length / numResponses * 100)}%)*\n`;
+      message += `*${optionText} - ${respondedUsernames.length} (${
+        numResponses === 0
+          ? "-"
+          : Math.round((respondedUsernames.length / numResponses) * 100)
+      }%)*\n`;
       message += `${respondedUsernames.join(", ")}\n`;
       message += "\n";
     });
-    message += `👥 *${numResponses} people* have responded so far.`
+    message += `👥 *${numResponses} people* have responded so far.`;
     callback(err, message, inlineKeyboard);
   });
 };
@@ -164,35 +168,42 @@ const initBotActions = () => {
       .replace("__", "");
     const userId = ctx.update.callback_query.from.id;
     upsertUser(ctx.update.callback_query.from);
-    toggleResponse(userId, optionId);
 
     const messageId = ctx.update.callback_query.message.message_id;
-    const chatId = ctx.update.callback_query.message.chat.id;
-    console.log(`User ${userId} has responded with ${optionId} for message ${messageId} in chat ${chatId}`);
+    toggleResponse(userId, optionId, messageId, isToggleOn => {
+      const chatId = ctx.update.callback_query.message.chat.id;
+      console.log(
+        `User ${userId} has responded with ${optionId} for message ${messageId} in chat ${chatId}`
+      );
 
-    getMessageById(messageId, chatId, (err, result) => {
-      if (err) {
-        console.error(
-          `Could not get message by ID for message ${messageId} in chat ${chatId}: `,
-          err
-        );
-      } else {
-        try {
-          if (result) {
-            updatePoll(result);
-          }
-        } catch (err) {
-          console.warn(
-            `Error sending poll from action with id ${optionIdString}: ${err}`
+      getMessageById(messageId, chatId, (err, result) => {
+        if (err) {
+          console.error(
+            `Could not get message by ID for message ${messageId} in chat ${chatId}: `,
+            err
           );
+        } else {
+          try {
+            if (result) {
+              updatePoll(result);
+            }
+          } catch (err) {
+            console.warn(
+              `Error sending poll from action with id ${optionIdString}: ${err}`
+            );
+          }
         }
-      }
-    });
+      });
 
-    const optionText = ctx.update.callback_query.message.reply_markup.inline_keyboard.find(
-      option => option[0].callback_data === optionIdString
-    )[0].text;
-    ctx.answerCbQuery(`You responded with ${optionText}`);
+      const optionText = ctx.update.callback_query.message.reply_markup.inline_keyboard.find(
+        option => option[0].callback_data === optionIdString
+      )[0].text;
+      ctx.answerCbQuery(
+        isToggleOn
+          ? `You responded with '${optionText}'`
+          : `You retracted your response '${optionText}'`
+      );
+    });
   });
 };
 

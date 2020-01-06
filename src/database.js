@@ -42,14 +42,16 @@ const upsertMessage = (message, newMessageId) => {
   });
 };
 
-const toggleResponse = (userId, optionId) => {
+const toggleResponse = (userId, optionId, messageId, callback) => {
   const query = `SELECT * FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
   getConnection().query(query, (err, result) => {
     if (err) console.error("Error finding response to toggle: ", err);
     if (result.length === 1) {
       deleteResponse(userId, optionId);
+      callback(false);
     } else {
-      insertResponse(userId, optionId);
+      insertResponse(userId, optionId, messageId);
+      callback(true);
     }
   });
 };
@@ -61,10 +63,20 @@ const deleteResponse = (userId, optionId) => {
   });
 };
 
-const insertResponse = (userId, optionId) => {
-  const query = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
-  getConnection().query(query, err => {
-    if (err) console.error("Error inserting response: ", err);
+const insertResponse = (userId, optionId, messageId) => {
+  const getOptionsForMessageQuery = `SELECT o.option_id FROM messages m LEFT JOIN options o ON m.message_id = o.message_id WHERE m.message_id = '${messageId}'`;
+  getConnection().query(getOptionsForMessageQuery, (err, result) => {
+    if (err) console.error("Error getting options for message: ", err);
+    result.forEach(optionToDelete => {
+      const deleteOtherResponsesQuery = `DELETE FROM responses WHERE option_id = ${optionToDelete.option_id} AND user_id = '${userId}'`;
+      getConnection().query(deleteOtherResponsesQuery, err => {
+        if (err) console.error("Error deleting response: ", err);
+      });
+    });
+    const insertResponseQuery = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
+    getConnection().query(insertResponseQuery, err => {
+      if (err) console.error("Error inserting response: ", err);
+    });  
   });
 };
 
