@@ -125,13 +125,16 @@ const getPollContent = (poll, callback) => {
     const responsesMap = {};
     let numResponses = 0;
     result.forEach(row => {
-      if (row.username) {
+      if (row.username || row.first_name) {
         numResponses++;
       }
-      if (responsesMap[row.text] && row.username) {
-        responsesMap[row.text].push(`@${row.username}`);
+      const displayName = row.username
+        ? `@${row.username}`
+        : `[${row.first_name}](tg://user?id=${row.user_id})`;
+      if (responsesMap[row.text]) {
+        responsesMap[row.text].push(displayName);
       } else {
-        responsesMap[row.text] = row.username ? [`@${row.username}`] : [];
+        responsesMap[row.text] = [displayName];
       }
       if (!options[row.option_id]) {
         options[row.option_id] = row.text;

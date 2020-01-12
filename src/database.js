@@ -10,7 +10,7 @@ const getNewMessages = callback => {
 };
 
 const getPollResponses = (messageId, chatId, callback) => {
-  const query = `SELECT o.text, o.option_id, u.username FROM (options o LEFT JOIN responses r ON o.option_id = r.option_id) LEFT JOIN users u ON r.user_id = u.user_id WHERE o.message_id = ${messageId} AND o.chat_id = ${chatId} ORDER BY o.option_id ASC`;
+  const query = `SELECT o.text, o.option_id, u.user_id, u.username, u.first_name FROM (options o LEFT JOIN responses r ON o.option_id = r.option_id) LEFT JOIN users u ON r.user_id = u.user_id WHERE o.message_id = ${messageId} AND o.chat_id = ${chatId} ORDER BY o.option_id ASC`;
   getConnection().query(query, (err, result) => {
     callback(err, result);
   });
@@ -76,12 +76,19 @@ const insertResponse = (userId, optionId, messageId) => {
     const insertResponseQuery = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
     getConnection().query(insertResponseQuery, err => {
       if (err) console.error("Error inserting response: ", err);
-    });  
+    });
   });
 };
 
-const upsertUser = ({ id, username }) => {
-  const query = `INSERT INTO users VALUES('${id}', '${username}') ON DUPLICATE KEY UPDATE username = '${username}'`;
+const upsertUser = ({ id, username, first_name, last_name }) => {
+  const usernameVal =
+    username && username !== "null" ? `'${username}'` : "NULL";
+  const firstNameVal =
+    first_name && first_name !== "null" ? `'${first_name}'` : "NULL";
+  const lastNameVal =
+    last_name && last_name !== "null" ? `'${last_name}'` : "NULL";
+  const query = `INSERT INTO users VALUES('${id}', ${usernameVal}, ${firstNameVal}, ${lastNameVal}) ON DUPLICATE KEY UPDATE username = ${usernameVal}, first_name = ${firstNameVal}, last_name = ${lastNameVal}`;
+  console.log(query);
   getConnection().query(query, err => {
     if (err) console.error("Error upserting user: ", err);
   });
