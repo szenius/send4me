@@ -125,9 +125,10 @@ const getPollContent = (poll, callback) => {
     const responsesMap = {};
     let numResponses = 0;
     result.forEach(row => {
-      if (row.username || row.first_name) {
-        numResponses++;
+      if (!row.username && !row.first_name) {
+        return;
       }
+      numResponses++;
       const displayName = row.username
         ? `@${row.username}`
         : `[${row.first_name}](tg://user?id=${row.user_id})`;
