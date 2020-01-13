@@ -125,6 +125,9 @@ const getPollContent = (poll, callback) => {
     const responsesMap = {};
     let numResponses = 0;
     result.forEach(row => {
+      if (!options[row.option_id]) {
+        options[row.option_id] = row.text;
+      }
       if (!row.username && !row.first_name) {
         return;
       }
@@ -136,9 +139,6 @@ const getPollContent = (poll, callback) => {
         responsesMap[row.text].push(displayName);
       } else {
         responsesMap[row.text] = [displayName];
-      }
-      if (!options[row.option_id]) {
-        options[row.option_id] = row.text;
       }
     });
     const inlineKeyboard = Extra.markdown().markup(m =>
