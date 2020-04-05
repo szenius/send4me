@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const expressApp = express();
-const { connect } = require("./mysql");
 const { initBot, launchBot } = require("./bot");
 const Promise = require("bluebird");
 const { ping } = require("./ping");
