@@ -42,7 +42,7 @@ const toggleResponse = async (userId, optionId, messageId) => {
   const query = `SELECT * FROM responses WHERE user_id = '${userId}' AND option_id = ${optionId}`;
   try {
     const conn = await getConnection();
-    const rows = await conn.execute(query);
+    const rows = (await conn.execute(query))[0];
 
     if (rows.length === 1) {
       await deleteResponse(userId, optionId);
@@ -66,9 +66,9 @@ const insertResponse = async (userId, optionId, messageId) => {
   const getOptionsForMessageQuery = `SELECT o.option_id FROM messages m LEFT JOIN options o ON m.message_id = o.message_id WHERE m.message_id = '${messageId}'`;
   try {
     const conn = await getConnection();
-    const rows = await conn.execute(getOptionsForMessageQuery);
+    const rows = (await conn.execute(getOptionsForMessageQuery))[0];
     const optionIds = rows.map(row => row.option_id);
-    const deleteOtherResponsesQuery = `DELETE FROM responses WHERE option_id IN ${optionIds} AND user_id = '${userId}'`;
+    const deleteOtherResponsesQuery = `DELETE FROM responses WHERE option_id IN (${optionIds}) AND user_id = '${userId}'`;
     try {
       await conn.execute(deleteOtherResponsesQuery);
     } catch (error) {

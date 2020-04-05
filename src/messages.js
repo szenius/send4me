@@ -12,7 +12,7 @@ const { Extra } = require("telegraf");
 
 const sendNewMessages = async () => {
   try {
-    const newMessages = await getNewMessages();
+    const newMessages = (await getNewMessages())[0];
     console.log(`Found ${newMessages.length} new messages to be sent`);
     if (newMessages) {
       newMessages.forEach(message => {
@@ -112,7 +112,7 @@ const sendMessage = async message => {
 };
 
 const getPollContent = async poll => {
-  const rows = await getPollResponses(poll.message_id, poll.chat_id);
+  const rows = (await getPollResponses(poll.message_id, poll.chat_id))[0];
   const options = {};
   const responsesMap = {};
   let numResponses = 0;
@@ -172,9 +172,9 @@ const initBotActions = () => {
     );
 
     try {
-      const rows = await getMessageById(messageId, chatId);
-      if (rows) {
-        updatePoll(rows);
+      const message = (await getMessageById(messageId, chatId))[0][0];
+      if (message) {
+        await updatePoll(message);
       }
     } catch (err) {
       console.warn(
