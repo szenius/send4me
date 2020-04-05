@@ -22,11 +22,6 @@ expressApp.listen(PORT, () => {
 });
 
 /**
- * Set up MySQL connection
- */
-connect();
-
-/**
  * Set up Telegram bot
  */
 initBot();
@@ -38,8 +33,12 @@ launchBot();
  */
 const run = () => {
   ping(APP_URL);
-  sendNewMessages();
-  closeOldMessages();
+  try {
+    sendNewMessages();
+    closeOldMessages();
+  } catch (error) {
+    console.error(`Error sending new messages and closing old messages: ${error}`);
+  }
   return Promise.delay(RUN_INTERVAL).then(() => run());
 };
 run();

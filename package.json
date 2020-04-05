@@ -9,6 +9,7 @@
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "mysql": "^2.17.1",
+    "mysql2": "^2.1.0",
     "telegraf": "^3.32.0",
     "telegraf-inline-menu": "^3.6.0"
   },
