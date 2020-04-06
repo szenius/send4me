@@ -1,14 +1,11 @@
 require("dotenv").config();
-const mysql = require("mysql2/promise");
+const mysql = require("mysql2");
 
 const DATABASE_URL = process.env.DATABASE_URL || "";
 
-let mysqlCon = null;
-
-const getConnection = () => {
-  return mysql.createConnection(DATABASE_URL);
-};
+const pool = mysql.createPool(DATABASE_URL);
+const getPromisePool = () => pool.promise();
 
 module.exports = {
-  getConnection
+  getPromisePool
 };
