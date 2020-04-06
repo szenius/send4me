@@ -8,7 +8,18 @@ let bot = null;
 const initBot = () => {
   bot = new Telegraf(BOT_TOKEN, { polling: true });
   bot.command("health", ctx => {
-    ctx.telegram.sendMessage(ctx.update.callback_query.message.chat.id, "OK");
+    ctx.reply("OK");
+  });
+  bot.command("restart", ctx => {
+    if (ctx.update.message.from.id === 38685842) {
+      ctx
+        .reply(
+          "Restarting bot... Please wait for a few minutes while the bot starts up again."
+        )
+        .then(() => {
+          process.exit(0);
+        });
+    }
   });
 };
 
