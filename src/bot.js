@@ -7,11 +7,13 @@ let bot = null;
 
 const initBot = () => {
   bot = new Telegraf(BOT_TOKEN, { polling: true });
+  bot.command("health", ctx => {
+    ctx.telegram.sendMessage(ctx.update.callback_query.message.chat.id, "OK");
+  });
 };
 
 const launchBot = () => {
   bot.launch();
-  isLaunched = true;
 };
 
 const getBot = () => {
