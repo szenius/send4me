@@ -10,17 +10,6 @@ const initBot = () => {
   bot.command("health", ctx => {
     ctx.reply("OK");
   });
-  bot.command("restart", ctx => {
-    if (ctx.update.message.from.id === 38685842) {
-      ctx
-        .reply(
-          "Restarting bot... Please wait for a few minutes while the bot starts up again."
-        )
-        .then(() => {
-          process.exit(0);
-        });
-    }
-  });
 };
 
 const launchBot = () => {
