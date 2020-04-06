@@ -44,6 +44,8 @@ const toggleResponse = async (userId, optionId, messageId) => {
     const conn = await getConnection();
     const rows = (await conn.execute(query))[0];
 
+    console.log(rows);
+
     if (rows.length === 1) {
       await deleteResponse(userId, optionId);
       return false;

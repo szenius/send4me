@@ -113,13 +113,13 @@ const sendMessage = async message => {
 
 const getPollContent = async poll => {
   const rows = (await getPollResponses(poll.message_id, poll.chat_id))[0];
-  const options = {};
-  const responsesMap = {};
+  const optionIdToTextMap = {};
+  const optionTextToResponsesMap = {};
   let numResponses = 0;
   rows.forEach(row => {
-    if (!options[row.option_id]) {
-      options[row.option_id] = row.text;
-      responsesMap[row.text] = responsesMap[row.text] || [];
+    if (!optionIdToTextMap[row.option_id]) {
+      optionIdToTextMap[row.option_id] = row.text;
+      optionTextToResponsesMap[row.text] = [];
     }
     if (!row.username && !row.first_name) {
       return;
@@ -128,18 +128,18 @@ const getPollContent = async poll => {
     const displayName = row.username
       ? `@${row.username}`
       : `[${row.first_name}](tg://user?id=${row.user_id})`;
-    responsesMap[row.text].push(displayName);
+    optionTextToResponsesMap[row.text].push(displayName);
   });
   const inlineKeyboard = Extra.markdown().markup(m =>
     m.inlineKeyboard(
-      Object.keys(options).map(key =>
-        m.callbackButton(options[key], `__OPTION__ID__${key}__`)
+      Object.keys(optionIdToTextMap).map(key =>
+        m.callbackButton(optionIdToTextMap[key], `__OPTION__ID__${key}__`)
       ),
       { columns: 1 }
     )
   );
   let message = `${poll.content}\n\n`;
-  Object.entries(responsesMap).forEach(([optionText, respondedUsernames]) => {
+  Object.entries(optionTextToResponsesMap).forEach(([optionText, respondedUsernames]) => {
     message += `*${optionText} - ${respondedUsernames.length} (${
       numResponses === 0
         ? "-"
