@@ -1,14 +1,11 @@
 const {
   getNewMessages,
   updateMessageByMessageAndChatId,
-  getPollResponses,
-  upsertUser,
-  toggleResponse,
-  getMessageById,
-} = require('./database');
-const {getBot} = require('./bot');
-const moment = require('moment');
-const {Extra} = require('telegraf');
+  getPollResponses
+} = require("./database");
+const { getBot } = require("./bot");
+const moment = require("moment");
+const { Extra } = require("telegraf");
 
 const sendNewMessages = async () => {
   try {
@@ -51,13 +48,22 @@ const sendPoll = async (poll) => {
   return poll;
 };
 
-const updatePoll = async (poll) => {
+const updatePoll = async (poll, ctx) => {
   try {
     if (poll && poll.message_id && poll.chat_id) {
-      bot = getBot();
-      const {message, inlineKeyboard} = await getPollContent(poll);
-      bot.telegram.editMessageText(poll.chat_id, poll.message_id, poll.message_id, message, inlineKeyboard);
-      console.log(`Updated poll ${poll.message_id} in chat ${poll.chat_id} on ${moment.utc().toString()}`);
+      const { message, inlineKeyboard } = await getPollContent(poll);
+      ctx.telegram.editMessageText(
+        poll.chat_id,
+        poll.message_id,
+        poll.message_id,
+        message,
+        inlineKeyboard
+      );
+      console.log(
+        `Updated poll ${poll.message_id} in chat ${
+          poll.chat_id
+        } on ${moment.utc().toString()}`
+      );
     }
   } catch (err) {
     console.error(`Error updating poll:\nPoll: ${JSON.stringify(poll)}\nError: ${err}`);
@@ -111,50 +117,23 @@ const getPollContent = async (poll) => {
     ),
   );
   let message = `${poll.content}\n\n`;
-  Object.entries(optionTextToResponsesMap).forEach(([optionText, respondedUsernames]) => {
-    message += `*${optionText} - ${respondedUsernames.length} (${
-      numResponses === 0 ? '-' : Math.round((respondedUsernames.length / numResponses) * 100)
-    }%)*\n`;
-    message += `${respondedUsernames.join(', ')}\n`;
-    message += '\n';
-  });
+  Object.entries(optionTextToResponsesMap).forEach(
+    ([optionText, respondedUsernames]) => {
+      message += `*${optionText} - ${respondedUsernames.length} (${
+        numResponses === 0
+          ? "-"
+          : Math.round((respondedUsernames.length / numResponses) * 100)
+      }%)*\n`;
+      message += `${respondedUsernames.join(", ")}\n`;
+      message += "\n";
+    }
+  );
   message += `👥 *${numResponses} people* have responded so far.`;
   return {message, inlineKeyboard};
-};
-
-const initBotActions = () => {
-  getBot().action(new RegExp(/__OPTION__ID__[0-9]+__/), async (ctx) => {
-    const optionIdString = ctx.update.callback_query.data;
-    const optionId = optionIdString.replace('__OPTION__ID__', '').replace('__', '');
-    const userId = ctx.update.callback_query.from.id;
-    await upsertUser(ctx.update.callback_query.from);
-
-    const messageId = ctx.update.callback_query.message.message_id;
-    const isToggleOn = await toggleResponse(userId, optionId, messageId);
-    const chatId = ctx.update.callback_query.message.chat.id;
-    console.log(`User ${userId} has responded with ${optionId} for message ${messageId} in chat ${chatId}`);
-
-    try {
-      const [rows] = await getMessageById(messageId, chatId);
-      const message = rows[0];
-      if (message) {
-        await updatePoll(message);
-      }
-    } catch (err) {
-      console.warn(`Error sending poll from action with id ${optionIdString}: ${err}`);
-    }
-
-    const optionText = ctx.update.callback_query.message.reply_markup.inline_keyboard.find(
-      (option) => option[0].callback_data === optionIdString,
-    )[0].text;
-    ctx.answerCbQuery(
-      isToggleOn ? `You responded with '${optionText}'` : `You retracted your response '${optionText}'`,
-    );
-  });
 };
 
 module.exports = {
   sendNewMessages,
   closeOldMessages,
-  initBotActions,
+  updatePoll
 };

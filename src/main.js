@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const expressApp = express();
-const {initBot, launchBot} = require('./bot');
-const Promise = require('bluebird');
-const {ping} = require('./ping');
-const {sendNewMessages, closeOldMessages, initBotActions} = require('./messages');
+const { setUpBot } = require("./bot");
+const Promise = require("bluebird");
+const { ping } = require("./ping");
+const { sendNewMessages, closeOldMessages } = require("./messages");
 
 const PORT = process.env.PORT || 3000;
 const APP_URL = process.env.HEROKU_APP_URL || '';
@@ -23,9 +23,7 @@ expressApp.listen(PORT, () => {
 /**
  * Set up Telegram bot
  */
-initBot();
-initBotActions();
-launchBot();
+setUpBot();
 
 /**
  * Run all jobs in infinite loop.
@@ -36,7 +34,9 @@ const run = () => {
     sendNewMessages();
     closeOldMessages();
   } catch (error) {
-    console.error(`Error sending new messages and closing old messages: ${error}`);
+    console.error(
+      `Error sending new messages and closing old messages: ${error}`
+    );
   }
   return Promise.delay(RUN_INTERVAL).then(() => run());
 };
