@@ -17,7 +17,12 @@ const getMessageById = async (messageId, chatId) => {
   return getPromisePool().query(query);
 };
 
-const upsertMessage = async (message, newMessageId) => {
+const insertMessage = async ({content, sendDate, closeDate, isPoll, chatId}) => {
+  const query = `INSERT messages (content, send_date, close_date, is_poll, is_sent, is_closed, chat_id) VALUES ('${content}', '${sendDate}', '${closeDate}', '${isPoll}', '${chatId}')`;
+  return getPromisePool().query(query);
+}
+
+const updateMessageByMessageAndChatId = async (message, newMessageId) => {
   const query = `UPDATE messages SET message_id = '${newMessageId}', content = '${
     message.content
   }', send_date = '${moment(message.send_date).format('YYYY-MM-DD HH:mm:ss')}', close_date = '${moment(
@@ -68,7 +73,7 @@ const upsertUser = async ({id, username, first_name, last_name}) => {
 
 module.exports = {
   getNewMessages,
-  upsertMessage,
+  upsertMessage: updateMessageByMessageAndChatId,
   toggleResponse,
   upsertUser,
   getMessageById,
