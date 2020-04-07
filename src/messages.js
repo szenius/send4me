@@ -1,6 +1,6 @@
 const {
   getNewMessages,
-  upsertMessage,
+  updateMessageByMessageAndChatId,
   getPollResponses,
   upsertUser,
   toggleResponse,
@@ -40,7 +40,7 @@ const sendPoll = async (poll) => {
       bot.telegram.sendMessage(poll.chat_id, message, inlineKeyboard).then(async (m) => {
         bot.telegram.pinChatMessage(poll.chat_id, m.message_id);
         poll.is_sent = true;
-        await upsertMessage(poll, m.message_id);
+        await updateMessageByMessageAndChatId(poll, m.message_id);
         console.log(`Sent poll ${m.message_id} to chat ${poll.chat_id} on ${moment.utc().toString()}`);
       });
     }
@@ -73,7 +73,7 @@ const sendMessage = async (message) => {
       .then(async (m) => {
         getBot().telegram.pinChatMessage(message.chat_id, m.message_id);
         message.is_sent = true;
-        await upsertMessage(message, m.message_id);
+        await updateMessageByMessageAndChatId(message, m.message_id);
         console.log(`Sent message ${m.message_id} to chat ${message.chat_id} on ${moment.utc().toString()}`);
       });
   } catch (err) {
