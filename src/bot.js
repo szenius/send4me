@@ -1,7 +1,14 @@
 require("dotenv").config();
 const Telegraf = require("telegraf");
-const { upsertUser, toggleResponse, getMessageById } = require("./database");
+const {
+  getChatsByAdminUserId,
+  upsertUser,
+  toggleResponse,
+  getMessageById
+} = require("./database");
 const { updatePoll } = require("./messages");
+const { Extra } = require("telegraf");
+
 const BOT_TOKEN = process.env.BOT_TOKEN || "";
 
 let bot = null;
@@ -11,6 +18,38 @@ const setUpBot = () => {
 
   bot.command("health", ctx => {
     ctx.reply("OK");
+  });
+
+  bot.command("schedule", async ctx => {
+    const chatType = ctx.update.message.chat.type;
+    if (chatType !== "private") {
+      ctx.reply(
+        "Scheduling only works in private conversations. Try direct messaging me!"
+      );
+      return;
+    }
+    const userId = ctx.update.message.from.id;
+    const [rows] = await getChatsByAdminUserId(userId);
+    if (rows.length === 0) {
+      ctx.reply(
+        "It doesn't seem like you are an admin for any chat. To become an admin, please contact @szenius."
+      );
+      return;
+    }
+    const chatId = ctx.update.message.chat.id;
+    const message = "Which of these chats do you want to send this message to?";
+    const inlineKeyboard = Extra.markdown().markup(m =>
+      m.inlineKeyboard(
+        rows.map(row =>
+          m.callbackButton(
+            row.name,
+            `__CHOOSE_CHAT__${chatId}__${row.chat_id}__`
+          )
+        ),
+        { columns: 1 }
+      )
+    );
+    ctx.reply(message, inlineKeyboard);
   });
 
   bot.action(new RegExp(/__OPTION__ID__[0-9]+__/), async ctx => {

@@ -1,6 +1,12 @@
 const moment = require('moment');
 const {getPromisePool} = require('./mysql');
 
+const getChatsByAdminUserId = async userId => {
+  const query =
+    "SELECT c.name, c.chat_id FROM (admin a INNER JOIN chats c ON a.chat_id = c.chat_id) WHERE a.user_id = ?";
+  return getPromisePool().query(query, [userId]);
+};
+
 const getNewMessages = async () => {
   const now = moment.utc().format('YYYY-MM-DD HH:mm:ss');
   const query = 'SELECT * FROM messages WHERE send_date < ? AND close_date > ? AND is_sent = ?';
@@ -85,6 +91,7 @@ const upsertUser = async ({id, username, first_name, last_name}) => {
 };
 
 module.exports = {
+  getChatsByAdminUserId,
   getNewMessages,
   insertMessage,
   updateMessageByMessageAndChatId,
