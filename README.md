@@ -1,4 +1,4 @@
-# Telegram Scheduler Bot
+# Send4Me - Another Telegram Bot
 
 [Find me alive on Telegram here!](http://t.me/Send4MeBot)
 
