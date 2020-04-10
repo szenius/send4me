@@ -1,6 +1,10 @@
 # Telegram Scheduler Bot
 
+[Find me alive on Telegram here!](http://t.me/schedme_bot)
+
+This bot was built to help administrators who have to periodically send out announcements or polls in chat groups. An example could be a RSVP poll to be sent out for a recurring event. Admins will be able to input the schedule of such an event into the bot and let the bot take care of when to send out RSVPs, enabling admins to focus more on planning the details of the event.
+
 ## User Guide
 This bot is still in the testing phase, so it's not opened to public yet. However, you may [drop me an email](mailto:ting.szeying@gmail.com) should you wish to be a tester once the bot is opened for private beta testing.
 
-Otherwise, you can also set up your own bot instance using the [Developer Guide](#developer-guide) below. 
+More details coming soon!
