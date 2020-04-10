@@ -1,6 +1,6 @@
 # Telegram Scheduler Bot
 
-[Find me alive on Telegram here!](http://t.me/schedme_bot)
+[Find me alive on Telegram here!](http://t.me/Send4MeBot)
 
 This bot was built to help administrators who have to periodically send out announcements or polls in chat groups. An example could be a RSVP poll to be sent out for a recurring event. Admins will be able to input the schedule of such an event into the bot and let the bot take care of when to send out RSVPs, enabling admins to focus more on planning the details of the event.
 
