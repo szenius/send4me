@@ -3,6 +3,7 @@ const Telegraf = require('telegraf');
 const {getChatsByAdminUserId, upsertUser, toggleResponse, getMessageById} = require('./database');
 const {updatePoll} = require('./messages');
 const {Extra} = require('telegraf');
+const {getInMemoryCache} = require('./cache');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 
@@ -29,15 +30,28 @@ const setUpBot = () => {
       );
       return;
     }
-    const chatId = ctx.update.message.chat.id;
+    // const chatId = ctx.update.message.chat.id;
     const message = 'Which of these chats do you want to send this message to?';
     const inlineKeyboard = Extra.markdown().markup((m) =>
       m.inlineKeyboard(
-        rows.map((row) => m.callbackButton(row.name, `__CHOOSE_CHAT__${chatId}__${row.chat_id}__`)),
+        rows.map((row) => {
+          console.log(`__CHOOSE__CHAT__${row.chat_id}__`);
+          return m.callbackButton(row.name, `__CHOOSE__CHAT__${row.chat_id}__`);
+        }),
         {columns: 1},
       ),
     );
     ctx.reply(message, inlineKeyboard);
+  });
+
+  bot.action(new RegExp(/__CHOOSE__CHAT__-[0-9]+__/), async (ctx) => {
+    const chatIdString = ctx.update.callback_query.data;
+    const targetChatId = chatIdString.replace('__CHOOSE__CHAT__', '').replace('__', '');
+    const userId = ctx.update.callback_query.from.id;
+    const sourceChatId = ctx.update.callback_query.message.chat.id;
+    getInMemoryCache().set(sourceChatId, targetChatId);
+    console.log(`User ${userId} (in chat ${sourceChatId}) is adding a schedule to ${targetChatId}`);
+    ctx.reply('Please upload a schedule file.');
   });
 
   bot.action(new RegExp(/__OPTION__ID__[0-9]+__/), async (ctx) => {
