@@ -1,8 +1,8 @@
-const moment = require("moment");
-const { getPromisePool } = require("./mysql");
+const moment = require('moment');
+const {getPromisePool} = require('./mysql');
 
 const getNewMessages = async () => {
-  const now = moment.utc().format("YYYY-MM-DD HH:mm:ss");
+  const now = moment.utc().format('YYYY-MM-DD HH:mm:ss');
   const query = `SELECT * FROM messages WHERE send_date < '${now}' AND close_date > '${now}' AND is_sent = false`;
   return getPromisePool().query(query);
 };
@@ -20,17 +20,13 @@ const getMessageById = async (messageId, chatId) => {
 const upsertMessage = async (message, newMessageId) => {
   const query = `UPDATE messages SET message_id = '${newMessageId}', content = '${
     message.content
-  }', send_date = '${moment(message.send_date).format(
-    "YYYY-MM-DD HH:mm:ss"
-  )}', close_date = '${moment(message.close_date).format(
-    "YYYY-MM-DD HH:mm:ss"
-  )}', is_poll = ${message.is_poll}, is_sent = ${
+  }', send_date = '${moment(message.send_date).format('YYYY-MM-DD HH:mm:ss')}', close_date = '${moment(
+    message.close_date,
+  ).format('YYYY-MM-DD HH:mm:ss')}', is_poll = ${message.is_poll}, is_sent = ${
     message.is_sent
-  }, is_closed = ${message.is_closed}, chat_id = '${
-    message.chat_id
-  }' WHERE message_id = '${message.message_id}' AND chat_id = '${
-    message.chat_id
-  }'`;
+  }, is_closed = ${message.is_closed}, chat_id = '${message.chat_id}' WHERE message_id = '${
+    message.message_id
+  }' AND chat_id = '${message.chat_id}'`;
   return getPromisePool().query(query);
 };
 
@@ -55,20 +51,17 @@ const deleteResponse = async (userId, optionId) => {
 const insertResponse = async (userId, optionId, messageId) => {
   const getOptionsForMessageQuery = `SELECT o.option_id FROM messages m LEFT JOIN options o ON m.message_id = o.message_id WHERE m.message_id = '${messageId}'`;
   const [rows] = await getPromisePool().query(getOptionsForMessageQuery);
-  const optionIds = rows.map(row => row.option_id);
+  const optionIds = rows.map((row) => row.option_id);
   const deleteOtherResponsesQuery = `DELETE FROM responses WHERE option_id IN (${optionIds}) AND user_id = '${userId}'`;
   await getPromisePool().query(deleteOtherResponsesQuery);
   const insertResponseQuery = `INSERT INTO responses VALUES('${userId}', ${optionId})`;
   await getPromisePool().query(insertResponseQuery);
 };
 
-const upsertUser = async ({ id, username, first_name, last_name }) => {
-  const usernameVal =
-    username && username !== "null" ? `'${username}'` : "NULL";
-  const firstNameVal =
-    first_name && first_name !== "null" ? `'${first_name}'` : "NULL";
-  const lastNameVal =
-    last_name && last_name !== "null" ? `'${last_name}'` : "NULL";
+const upsertUser = async ({id, username, first_name, last_name}) => {
+  const usernameVal = username && username !== 'null' ? `'${username}'` : 'NULL';
+  const firstNameVal = first_name && first_name !== 'null' ? `'${first_name}'` : 'NULL';
+  const lastNameVal = last_name && last_name !== 'null' ? `'${last_name}'` : 'NULL';
   const query = `INSERT INTO users VALUES('${id}', ${usernameVal}, ${firstNameVal}, ${lastNameVal}) ON DUPLICATE KEY UPDATE username = ${usernameVal}, first_name = ${firstNameVal}, last_name = ${lastNameVal}`;
   return getPromisePool().query(query);
 };
@@ -79,5 +72,5 @@ module.exports = {
   toggleResponse,
   upsertUser,
   getMessageById,
-  getPollResponses
+  getPollResponses,
 };
