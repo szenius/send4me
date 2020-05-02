@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const expressApp = express();
-const { setUpBot } = require("./bot");
-const Promise = require("bluebird");
-const { ping } = require("./ping");
-const { sendNewMessages, closeOldMessages } = require("./messages");
+const {setUpBot} = require('./bot');
+const Promise = require('bluebird');
+const {ping} = require('./ping');
+const {sendNewMessages, closeOldMessages} = require('./messages');
 
 const PORT = process.env.PORT || 3000;
 const APP_URL = process.env.HEROKU_APP_URL || '';
@@ -34,9 +34,7 @@ const run = () => {
     sendNewMessages();
     closeOldMessages();
   } catch (error) {
-    console.error(
-      `Error sending new messages and closing old messages: ${error}`
-    );
+    console.error(`Error sending new messages and closing old messages: ${error}`);
   }
   return Promise.delay(RUN_INTERVAL).then(() => run());
 };

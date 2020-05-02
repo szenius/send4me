@@ -1,9 +1,9 @@
 const moment = require('moment');
 const {getPromisePool} = require('./mysql');
 
-const getChatsByAdminUserId = async userId => {
+const getChatsByAdminUserId = async (userId) => {
   const query =
-    "SELECT c.name, c.chat_id FROM (admin a INNER JOIN chats c ON a.chat_id = c.chat_id) WHERE a.user_id = ?";
+    'SELECT c.name, c.chat_id FROM (admin a INNER JOIN chats c ON a.chat_id = c.chat_id) WHERE a.user_id = ?';
   return getPromisePool().query(query, [userId]);
 };
 
