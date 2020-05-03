@@ -24,10 +24,10 @@ const getMessageById = async (messageId, chatId) => {
   return getPromisePool().query(query, [messageId, chatId]);
 };
 
-const insertMessage = async ({content, sendDate, closeDate, isPoll, chatId}) => {
+const insertMessage = async ({messageId, content, sendDate, closeDate, isPoll, chatId}) => {
   const query =
-    'INSERT messages (content, send_date, close_date, is_poll, is_sent, is_closed, chat_id) VALUES (?, ?, ?, ?, ?)';
-  return getPromisePool().query(query, [content, sendDate, closeDate, isPoll, chatId]);
+    'INSERT messages (message_id, content, send_date, close_date, is_poll, is_sent, is_closed, chat_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  return getPromisePool().query(query, [messageId, content, sendDate, closeDate, isPoll, false, false, chatId]);
 };
 
 const updateMessageByMessageAndChatId = async (message, newMessageId) => {

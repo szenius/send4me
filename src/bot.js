@@ -1,9 +1,17 @@
 require('dotenv').config();
 const Telegraf = require('telegraf');
-const {getChatsByAdminUserId, upsertUser, toggleResponse, getMessageById} = require('./database');
+const {
+  getChatsByAdminUserId,
+  upsertUser,
+  toggleResponse,
+  getMessageById,
+  insertMessage,
+} = require('./database');
 const {updatePoll} = require('./messages');
 const {Extra} = require('telegraf');
 const {getInMemoryCache} = require('./cache');
+const axios = require('axios');
+const csv = require('csvtojson');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 
@@ -12,8 +20,16 @@ let bot = null;
 const setUpBot = () => {
   bot = new Telegraf(BOT_TOKEN, {polling: true});
 
-  bot.command('health', (ctx) => {
-    ctx.reply('OK');
+  bot.start((ctx) =>
+    ctx.reply(
+      'Hello! I can help you schedule polls to be sent to a group on a regular basis. Use /schedule to get started.',
+    ),
+  );
+
+  bot.command('help', (ctx) => {
+    ctx.reply(
+      'Hello! I can help you schedule polls to be sent to a group on a regular basis. Use /schedule to get started.',
+    );
   });
 
   bot.command('schedule', async (ctx) => {
@@ -30,18 +46,53 @@ const setUpBot = () => {
       );
       return;
     }
-    // const chatId = ctx.update.message.chat.id;
     const message = 'Which of these chats do you want to send this message to?';
     const inlineKeyboard = Extra.markdown().markup((m) =>
       m.inlineKeyboard(
-        rows.map((row) => {
-          console.log(`__CHOOSE__CHAT__${row.chat_id}__`);
-          return m.callbackButton(row.name, `__CHOOSE__CHAT__${row.chat_id}__`);
-        }),
+        rows.map((row) => m.callbackButton(row.name, `__CHOOSE__CHAT__${row.chat_id}__`)),
         {columns: 1},
       ),
     );
     ctx.reply(message, inlineKeyboard);
+  });
+
+  bot.on('document', async (ctx) => {
+    const chatId = ctx.update.message.chat.id;
+    const targetChatId = getInMemoryCache().get(chatId);
+    if (!targetChatId) {
+      return;
+    }
+
+    const {file_id: fileId, mime_type: mimeType} = ctx.update.message.document;
+    if (mimeType !== 'text/csv') {
+      ctx.reply('Please upload a CSV file.');
+      return;
+    }
+
+    getInMemoryCache().remove(chatId);
+    ctx.reply('Received file. Please wait as we schedule your messages...');
+
+    const fileUrl = await ctx.telegram.getFileLink(fileId);
+    const response = await axios.get(fileUrl);
+
+    // TODO: make async
+    csv()
+      .fromString(response.data)
+      .then(async (rows) => {
+        for (const row of rows) {
+          await insertMessage({
+            messageId:
+              Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+            content: row.message,
+            sendDate: row.send_date,
+            closeDate: row.close_date,
+            isPoll: false,
+            chatId: targetChatId,
+          });
+        }
+      });
+
+    ctx.reply('Scheduled your messages. You can use /view to see them.');
   });
 
   bot.action(new RegExp(/__CHOOSE__CHAT__-[0-9]+__/), async (ctx) => {
@@ -51,7 +102,14 @@ const setUpBot = () => {
     const sourceChatId = ctx.update.callback_query.message.chat.id;
     getInMemoryCache().set(sourceChatId, targetChatId);
     console.log(`User ${userId} (in chat ${sourceChatId}) is adding a schedule to ${targetChatId}`);
-    ctx.reply('Please upload a schedule file.');
+    ctx.reply(`Please upload a schedule file. Ensure that it is a CSV file with the following columns:
+
+    description
+    send_date
+    close_date
+
+    TODO:
+    `);
   });
 
   bot.action(new RegExp(/__OPTION__ID__[0-9]+__/), async (ctx) => {
