@@ -2,7 +2,9 @@
   "name": "bless-admin-bot",
   "version": "1.0.0",
   "dependencies": {
+    "axios": "0.19.2",
     "bluebird": "3.5.5",
+    "csvtojson": "2.0.10",
     "dotenv": "8.0.0",
     "express": "4.17.1",
     "moment": "2.24.0",
