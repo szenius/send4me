@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const expressApp = express();
-const {setUpBot} = require('./bot');
+const {setUpBot} = require('./bot/bot');
 const Promise = require('bluebird');
-const {ping} = require('./ping');
-const {sendNewMessages, closeOldMessages} = require('./messages');
+const {ping} = require('./ping/ping');
+const {sendNewMessages, closeOldMessages} = require('./scheduler/scheduler');
 
 const PORT = process.env.PORT || 3000;
 const APP_URL = process.env.HEROKU_APP_URL || '';

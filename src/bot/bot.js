@@ -7,13 +7,13 @@ const {
   getMessageById,
   insertMessage,
   updateMessageByMessageAndChatId,
-} = require('./database');
+} = require('../database/database');
 const {Extra} = require('telegraf');
-const {getInMemoryCache} = require('./cache');
+const {getInMemoryCache} = require('../database/cache');
 const axios = require('axios');
 const csv = require('csvtojson');
 const moment = require('moment');
-const {getPollContent} = require('./poll');
+const {getPollContent} = require('../message/getPollContent');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 

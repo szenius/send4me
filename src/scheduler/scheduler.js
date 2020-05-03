@@ -1,5 +1,5 @@
-const {getNewMessages} = require('./database');
-const {sendMessage, sendPoll} = require('./bot');
+const {getNewMessages} = require('../database/database');
+const {sendMessage, sendPoll} = require('../bot/bot');
 
 const sendNewMessages = async () => {
   try {

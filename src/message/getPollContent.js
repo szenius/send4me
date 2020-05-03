@@ -1,4 +1,4 @@
-const {getPollResponses} = require('./database');
+const {getPollResponses} = require('../database/database');
 const {Extra} = require('telegraf');
 
 const getPollContent = async (poll) => {
