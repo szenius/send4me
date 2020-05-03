@@ -48,6 +48,10 @@ const setUpBot = () => {
     ctx.reply(SCHEDULE.MESSAGE_CHOOSE_CHAT, inlineKeyboard);
   });
 
+  bot.command('view', async (ctx) => {
+    ctx.reply('COMING SOON');
+  });
+
   bot.on('document', async (ctx) => {
     const chatId = ctx.update.message.chat.id;
     const targetChatId = getInMemoryCache().get(chatId);
