@@ -1,6 +1,5 @@
-const {getNewMessages, updateMessageByMessageAndChatId, getPollResponses} = require('./database');
-const {getBot} = require('./bot');
-const moment = require('moment');
+const {getNewMessages, getPollResponses} = require('./database');
+const {sendMessage, sendPoll} = require('./bot');
 const {Extra} = require('telegraf');
 
 const sendNewMessages = async () => {
@@ -23,56 +22,6 @@ const sendNewMessages = async () => {
 
 const closeOldMessages = () => {
   // TODO:
-};
-
-const sendPoll = async (poll) => {
-  try {
-    if (poll && poll.message_id && poll.chat_id) {
-      bot = getBot();
-      const {message, inlineKeyboard} = await getPollContent(poll);
-      bot.telegram.sendMessage(poll.chat_id, message, inlineKeyboard).then(async (m) => {
-        bot.telegram.pinChatMessage(poll.chat_id, m.message_id);
-        poll.is_sent = true;
-        await updateMessageByMessageAndChatId(poll, m.message_id);
-        console.log(`Sent poll ${m.message_id} to chat ${poll.chat_id} on ${moment.utc().toString()}`);
-      });
-    }
-  } catch (err) {
-    console.error(`Error sending new poll:\nPoll: ${JSON.stringify(poll)}\nError: ${err}`);
-    throw err;
-  }
-  return poll;
-};
-
-const updatePoll = async (poll, ctx) => {
-  try {
-    if (poll && poll.message_id && poll.chat_id) {
-      const {message, inlineKeyboard} = await getPollContent(poll);
-      ctx.telegram.editMessageText(poll.chat_id, poll.message_id, poll.message_id, message, inlineKeyboard);
-      console.log(`Updated poll ${poll.message_id} in chat ${poll.chat_id} on ${moment.utc().toString()}`);
-    }
-  } catch (err) {
-    console.error(`Error updating poll:\nPoll: ${JSON.stringify(poll)}\nError: ${err}`);
-    throw err;
-  }
-  return poll;
-};
-
-const sendMessage = async (message) => {
-  try {
-    getBot()
-      .telegram.sendMessage(message.chat_id, message.text)
-      .then(async (m) => {
-        getBot().telegram.pinChatMessage(message.chat_id, m.message_id);
-        message.is_sent = true;
-        await updateMessageByMessageAndChatId(message, m.message_id);
-        console.log(`Sent message ${m.message_id} to chat ${message.chat_id} on ${moment.utc().toString()}`);
-      });
-  } catch (err) {
-    console.error(`Error sending new message:\nMessage: ${JSON.stringify(message)}\nError: ${err}`);
-    throw err;
-  }
-  return message;
 };
 
 const getPollContent = async (poll) => {
@@ -117,5 +66,4 @@ const getPollContent = async (poll) => {
 module.exports = {
   sendNewMessages,
   closeOldMessages,
-  updatePoll,
 };

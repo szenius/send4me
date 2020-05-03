@@ -6,12 +6,13 @@ const {
   toggleResponse,
   getMessageById,
   insertMessage,
+  updateMessageByMessageAndChatId,
 } = require('./database');
-const {updatePoll} = require('./messages');
 const {Extra} = require('telegraf');
 const {getInMemoryCache} = require('./cache');
 const axios = require('axios');
 const csv = require('csvtojson');
+const moment = require('moment');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 
@@ -75,7 +76,6 @@ const setUpBot = () => {
     const fileUrl = await ctx.telegram.getFileLink(fileId);
     const response = await axios.get(fileUrl);
 
-    // TODO: make async
     csv()
       .fromString(response.data)
       .then(async (rows) => {
@@ -144,14 +144,55 @@ const setUpBot = () => {
   bot.launch();
 };
 
-const getBot = () => {
-  if (bot) {
-    return bot;
+const sendPoll = async (poll) => {
+  try {
+    if (poll && poll.message_id && poll.chat_id) {
+      const {message, inlineKeyboard} = await getPollContent(poll);
+      bot.telegram.sendMessage(poll.chat_id, message, inlineKeyboard).then(async (m) => {
+        bot.telegram.pinChatMessage(poll.chat_id, m.message_id);
+        poll.is_sent = true;
+        await updateMessageByMessageAndChatId(poll, m.message_id);
+        console.log(`Sent poll ${m.message_id} to chat ${poll.chat_id} on ${moment.utc().toString()}`);
+      });
+    }
+  } catch (err) {
+    console.error(`Error sending new poll:\nPoll: ${JSON.stringify(poll)}\nError: ${err}`);
+    throw err;
   }
-  throw new Error('Bot not initialised!');
+  return poll;
+};
+
+const updatePoll = async (poll, ctx) => {
+  try {
+    if (poll && poll.message_id && poll.chat_id) {
+      const {message, inlineKeyboard} = await getPollContent(poll);
+      ctx.telegram.editMessageText(poll.chat_id, poll.message_id, poll.message_id, message, inlineKeyboard);
+      console.log(`Updated poll ${poll.message_id} in chat ${poll.chat_id} on ${moment.utc().toString()}`);
+    }
+  } catch (err) {
+    console.error(`Error updating poll:\nPoll: ${JSON.stringify(poll)}\nError: ${err}`);
+    throw err;
+  }
+  return poll;
+};
+
+const sendMessage = async (message) => {
+  try {
+    bot.telegram.sendMessage(message.chat_id, message.content).then(async (m) => {
+      bot.telegram.pinChatMessage(message.chat_id, m.message_id);
+      message.is_sent = true;
+      await updateMessageByMessageAndChatId(message, m.message_id);
+      console.log(`Sent message ${m.message_id} to chat ${message.chat_id} on ${moment.utc().toString()}`);
+    });
+  } catch (err) {
+    console.error(`Error sending new message:\nMessage: ${JSON.stringify(message)}\nError: ${err}`);
+    throw err;
+  }
+  return message;
 };
 
 module.exports = {
   setUpBot,
-  getBot,
+  sendMessage,
+  sendPoll,
 };
