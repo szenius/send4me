@@ -13,6 +13,7 @@ const {getInMemoryCache} = require('./cache');
 const axios = require('axios');
 const csv = require('csvtojson');
 const moment = require('moment');
+const {getPollContent} = require('./poll');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 

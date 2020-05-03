@@ -1,28 +1,5 @@
-const {getNewMessages, getPollResponses} = require('./database');
-const {sendMessage, sendPoll} = require('./bot');
+const {getPollResponses} = require('./database');
 const {Extra} = require('telegraf');
-
-const sendNewMessages = async () => {
-  try {
-    const [rows] = await getNewMessages();
-    console.log(`Found ${rows.length} new messages to be sent`);
-    if (rows) {
-      rows.forEach((message) => {
-        if (message.is_poll) {
-          sendPoll(message);
-        } else {
-          sendMessage(message);
-        }
-      });
-    }
-  } catch (err) {
-    console.error('Error sending new messages: ', err);
-  }
-};
-
-const closeOldMessages = () => {
-  // TODO:
-};
 
 const getPollContent = async (poll) => {
   const [rows] = await getPollResponses(poll.message_id, poll.chat_id);
@@ -64,6 +41,5 @@ const getPollContent = async (poll) => {
 };
 
 module.exports = {
-  sendNewMessages,
-  closeOldMessages,
+  getPollContent,
 };
