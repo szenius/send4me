@@ -14,6 +14,7 @@ const axios = require('axios');
 const csv = require('csvtojson');
 const moment = require('moment');
 const {getPollContent} = require('../message/getPollContent');
+const {WELCOME, SCHEDULE} = require('./responses');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 
@@ -22,40 +23,29 @@ let bot = null;
 const setUpBot = () => {
   bot = new Telegraf(BOT_TOKEN, {polling: true});
 
-  bot.start((ctx) =>
-    ctx.reply(
-      'Hello! I can help you schedule polls to be sent to a group on a regular basis. Use /schedule to get started.',
-    ),
-  );
+  bot.start((ctx) => ctx.reply(WELCOME));
 
-  bot.command('help', (ctx) => {
-    ctx.reply(
-      'Hello! I can help you schedule polls to be sent to a group on a regular basis. Use /schedule to get started.',
-    );
-  });
+  bot.command('help', (ctx) => ctx.reply(WELCOME));
 
   bot.command('schedule', async (ctx) => {
     const chatType = ctx.update.message.chat.type;
     if (chatType !== 'private') {
-      ctx.reply('Scheduling only works in private conversations. Try direct messaging me!');
+      ctx.reply(SCHEDULE.ERROR_NOT_PRIVATE_CHAT);
       return;
     }
     const userId = ctx.update.message.from.id;
     const [rows] = await getChatsByAdminUserId(userId);
     if (rows.length === 0) {
-      ctx.reply(
-        "It doesn't seem like you are an admin for any chat. To become an admin, please contact @szenius.",
-      );
+      ctx.reply(SCHEDULE.ERROR_NOT_ADMIN);
       return;
     }
-    const message = 'Which of these chats do you want to send this message to?';
     const inlineKeyboard = Extra.markdown().markup((m) =>
       m.inlineKeyboard(
         rows.map((row) => m.callbackButton(row.name, `__CHOOSE__CHAT__${row.chat_id}__`)),
         {columns: 1},
       ),
     );
-    ctx.reply(message, inlineKeyboard);
+    ctx.reply(SCHEDULE.MESSAGE_CHOOSE_CHAT, inlineKeyboard);
   });
 
   bot.on('document', async (ctx) => {
@@ -67,33 +57,35 @@ const setUpBot = () => {
 
     const {file_id: fileId, mime_type: mimeType} = ctx.update.message.document;
     if (mimeType !== 'text/csv') {
-      ctx.reply('Please upload a CSV file.');
+      ctx.reply(SCHEDULE.ERROR_NOT_CSV_FILE + '\n\n' + SCHEDULE.MESSAGE_CSV_FILE_FORMAT, Extra.markdown());
       return;
     }
 
     getInMemoryCache().remove(chatId);
-    ctx.reply('Received file. Please wait as we schedule your messages...');
+    ctx.reply(SCHEDULE.MESSAGE_ADDING_SCHEDULE);
 
     const fileUrl = await ctx.telegram.getFileLink(fileId);
     const response = await axios.get(fileUrl);
 
+    const userId = ctx.update.message.from.id;
     csv()
       .fromString(response.data)
       .then(async (rows) => {
         for (const row of rows) {
+          const messageId =
+            Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
           await insertMessage({
-            messageId:
-              Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+            messageId,
             content: row.message,
             sendDate: row.send_date,
             closeDate: row.close_date,
             isPoll: false,
             chatId: targetChatId,
           });
+          console.log(`User ${userId} added message ${messageId} to chat ${targetChatId}`);
         }
+        ctx.reply(SCHEDULE.MESSAGE_ADDED_SCHEDULE);
       });
-
-    ctx.reply('Scheduled your messages. You can use /view to see them.');
   });
 
   bot.action(new RegExp(/__CHOOSE__CHAT__-[0-9]+__/), async (ctx) => {
@@ -103,14 +95,10 @@ const setUpBot = () => {
     const sourceChatId = ctx.update.callback_query.message.chat.id;
     getInMemoryCache().set(sourceChatId, targetChatId);
     console.log(`User ${userId} (in chat ${sourceChatId}) is adding a schedule to ${targetChatId}`);
-    ctx.reply(`Please upload a schedule file. Ensure that it is a CSV file with the following columns:
-
-    description
-    send_date
-    close_date
-
-    TODO:
-    `);
+    ctx.reply(
+      SCHEDULE.MESSAGE_UPLOAD_SCHEDULE_FILE + '\n\n' + SCHEDULE.MESSAGE_CSV_FILE_FORMAT,
+      Extra.markdown(),
+    );
   });
 
   bot.action(new RegExp(/__OPTION__ID__[0-9]+__/), async (ctx) => {
