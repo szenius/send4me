@@ -1,3 +1,5 @@
+> Deprecated. Please see [Version 2](https://github.com/szenius/send4me2) of this bot here.
+
 # Send4Me - Another Telegram Bot
 
 [Find me alive on Telegram here!](http://t.me/Send4MeBot)
